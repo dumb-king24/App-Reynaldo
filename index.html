@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#090d16">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>REINALDO // TRACKER</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            obsidian: '#090d16',
+            slateDark: '#111827',
+            slateCard: '#161f32',
+            steel: '#26334d',
+            electric: '#0ea5e9',
+            electricGlow: '#38bdf8',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+    body {
+      background-color: #090d16;
+      color: #f1f5f9;
+      font-family: 'Inter', sans-serif;
+      overscroll-behavior-y: contain;
+    }
+    .tabular-nums { font-variant-numeric: tabular-nums; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type="number"] { -moz-appearance: textfield; }
+  </style>
+</head>
+<body class="min-h-screen pb-24 select-none">
+
+  <!-- HEADER SUPERIOR -->
+  <header class="sticky top-0 z-30 bg-obsidian/90 backdrop-blur-md border-b border-steel/60 px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <div class="w-8 h-8 rounded-lg bg-electric/15 border border-electric/40 flex items-center justify-center text-electricGlow font-mono font-extrabold text-sm">
+        R//
+      </div>
+      <div>
+        <h1 class="text-sm font-extrabold tracking-wider text-white uppercase">Reinaldo Tracker</h1>
+        <p id="header-date" class="text-[11px] font-mono text-slate-400">--</p>
+      </div>
+    </div>
+    <button onclick="openBackupModal()" class="px-2.5 py-1.5 rounded-lg bg-slateCard border border-steel text-xs font-medium text-slate-300 active:scale-95 transition flex items-center gap-1.5">
+      <svg class="w-3.5 h-3.5 text-electricGlow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+      Datos
+    </button>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main id="app-content" class="max-w-md mx-auto px-4 pt-4 space-y-4">
+
+    <!-- ==================== PESTAÑA 0: INICIO (DASHBOARD) ==================== -->
+    <section id="tab-home" class="space-y-4">
+      
+      <!-- Tarjeta Plan del Día (Editable) -->
+      <div class="bg-gradient-to-br from-slateCard to-obsidian border border-electric/30 rounded-2xl p-4 shadow-lg">
+        <div class="flex items-center justify-between mb-2">
+          <span id="home-day-badge" class="text-[11px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-electric/15 text-electricGlow font-bold">Hoy</span>
+          <button onclick="toggleScheduleEditor()" class="text-xs text-slate-400 hover:text-white flex items-center gap-1 bg-obsidian/60 px-2 py-1 rounded-lg border border-steel/60">
+            ✎ Editar horario
+          </button>
+        </div>
+        <h2 id="home-today-title" class="text-lg font-extrabold text-white leading-tight">--</h2>
+        <p id="home-today-note" class="text-xs text-slate-400 mt-1">--</p>
+
+        <!-- Editor rápido de horario semanal -->
+        <div id="schedule-editor" class="hidden mt-3 pt-3 border-t border-steel/60 space-y-2">
+          <p class="text-[11px] text-slate-400">Personaliza qué haces cada día de la semana:</p>
+          <div id="schedule-inputs" class="space-y-1.5"></div>
+          <button onclick="saveSchedule()" class="w-full py-2 rounded-lg bg-electric text-obsidian font-bold text-xs mt-2">Guardar Horario Semanal</button>
+        </div>
+      </div>
+
+      <!-- Tarjetas Resumen Rápido (Macros & Salto) -->
+      <div class="grid grid-cols-2 gap-3">
+        <!-- Resumen Macros -->
+        <div onclick="switchTab('macros')" class="bg-slateCard border border-steel/70 rounded-2xl p-3.5 active:scale-98 transition cursor-pointer">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[11px] font-mono uppercase text-slate-400">Calorías Hoy</span>
+            <span class="text-xs text-electricGlow">→</span>
+          </div>
+          <div class="flex items-baseline gap-1">
+            <span id="home-kcal-val" class="text-xl font-mono font-extrabold text-white tabular-nums">0</span>
+            <span id="home-kcal-goal" class="text-xs font-mono text-slate-400">/ 2550</span>
+          </div>
+          <div class="w-full h-1.5 bg-obsidian rounded-full overflow-hidden mt-2">
+            <div id="home-kcal-bar" class="h-full bg-electric transition-all duration-300" style="width: 0%"></div>
+          </div>
+          <p id="home-prot-text" class="text-[11px] font-mono text-emerald-400 mt-1.5">0g / 185g Prot</p>
+        </div>
+
+        <!-- Resumen Salto -->
+        <div onclick="switchTab('jump')" class="bg-slateCard border border-steel/70 rounded-2xl p-3.5 active:scale-98 transition cursor-pointer">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[11px] font-mono uppercase text-slate-400">Salto Máx</span>
+            <span class="text-xs text-electricGlow">→</span>
+          </div>
+          <div class="flex items-baseline gap-1">
+            <span id="home-jump-val" class="text-xl font-mono font-extrabold text-white tabular-nums">--</span>
+            <span id="home-jump-goal" class="text-xs font-mono text-slate-400">/ 100 cm</span>
+          </div>
+          <div class="w-full h-1.5 bg-obsidian rounded-full overflow-hidden mt-2">
+            <div id="home-jump-bar" class="h-full bg-amber-400 transition-all duration-300" style="width: 0%"></div>
+          </div>
+          <p id="home-jump-diff" class="text-[11px] font-mono text-amber-300 mt-1.5">Registra tu marca</p>
+        </div>
+      </div>
+
+      <!-- Último Entrenamiento / Acceso Directo Gym -->
+      <div onclick="switchTab('gym')" class="bg-slateCard border border-steel/70 rounded-2xl p-3.5 flex items-center justify-between active:scale-98 transition cursor-pointer">
+        <div>
+          <span class="text-[11px] font-mono uppercase text-slate-400">Gimnasio & Pliometría</span>
+          <p id="home-gym-summary" class="text-sm font-bold text-white mt-0.5">Toca para registrar series y cargas</p>
+        </div>
+        <div class="w-9 h-9 rounded-xl bg-electric/15 border border-electric/30 flex items-center justify-center text-electricGlow font-bold">
+          🏋️
+        </div>
+      </div>
+
+      <!-- Checklist Diario Personalizable -->
+      <div class="bg-slateCard border border-steel/70 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-xs font-mono uppercase tracking-wider text-slate-300 font-bold">Checklist Diario</h3>
+            <p class="text-[11px] text-slate-400">Tus hábitos clave de hoy</p>
+          </div>
+          <button onclick="resetDailyChecklist()" class="text-[11px] font-mono text-slate-400 hover:text-white px-2 py-1 rounded bg-obsidian border border-steel/60">Reiniciar</button>
+        </div>
+
+        <div id="checklist-items" class="space-y-2"></div>
+
+        <!-- Agregar nuevo hábito -->
+        <div class="flex gap-2 pt-1">
+          <input id="new-habit-input" type="text" placeholder="Agregar nuevo hábito (ej. Dominadas)..." class="flex-1 bg-obsidian border border-steel rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-electric">
+          <button onclick="addHabit()" class="px-3 py-2 rounded-xl bg-electric/20 border border-electric/40 text-electricGlow font-bold text-xs">+</button>
+        </div>
+      </div>
+
+      <!-- Notas Rápidas Personales -->
+      <div class="bg-slateCard border border-steel/70 rounded-2xl p-4 space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-mono uppercase tracking-wider text-slate-300 font-bold">Notas / Recordatorios</span>
+          <span id="notes-saved-badge" class="text-[10px] font-mono text-emerald-400 opacity-0 transition-opacity">Guardado</span>
+        </div>
+        <textarea id="home-notes" rows="2" oninput="saveNotes()" placeholder="Escribe aquí tus notas libres, sensaciones de rodilla, ajustes de peso..." class="w-full bg-obsidian border border-steel rounded-xl p-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-electric"></textarea>
+      </div>
+    </section>
+
+    <!-- ==================== PESTAÑA 1: MACROS ==================== -->
+    <section id="tab-macros" class="hidden space-y-4">
+      
+      <!-- Resumen Macros + Botón Editar Metas -->
+      <div class="bg-slateCard border border-steel/70 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-xs font-mono uppercase text-slate-400">Consumo Diario (Crudo)</span>
+            <div class="flex items-baseline gap-1.5">
+              <span id="macro-total-kcal" class="text-2xl font-mono font-extrabold text-white tabular-nums">0</span>
+              <span class="text-xs font-mono text-slate-400">/ <span id="macro-goal-kcal-label">2550</span> kcal</span>
+            </div>
+          </div>
+          <div class="flex gap-1.5">
+            <button onclick="toggleMacroGoalsEditor()" class="px-2.5 py-1.5 rounded-lg bg-obsidian border border-steel text-xs text-slate-300">⚙ Metas</button>
+            <button onclick="closeMacroDay()" class="px-2.5 py-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/40 text-xs font-semibold text-emerald-300">Cerrar Día</button>
+          </div>
+        </div>
+
+        <!-- Editor de Metas de Macros -->
+        <div id="macro-goals-editor" class="hidden pt-2 border-t border-steel/60 space-y-2">
+          <p class="text-[11px] text-slate-400">Define tus metas diarias:</p>
+          <div class="grid grid-cols-4 gap-2">
+            <div>
+              <label class="text-[10px] text-slate-400 block">Kcal</label>
+              <input id="goal-kcal-in" type="number" class="w-full bg-obsidian border border-steel rounded-lg px-2 py-1.5 text-xs font-mono text-white">
+            </div>
+            <div>
+              <label class="text-[10px] text-slate-400 block">Prot (g)</label>
+              <input id="goal-p-in" type="number" class="w-full bg-obsidian border border-steel rounded-lg px-2 py-1.5 text-xs font-mono text-white">
+            </div>
+            <div>
+              <label class="text-[10px] text-slate-400 block">Carb (g)</label>
+              <input id="goal-c-in" type="number" class="w-full bg-obsidian border border-steel rounded-lg px-2 py-1.5 text-xs font-mono text-white">
+            </div>
+            <div>
+              <label class="text-[10px] text-slate-400 block">Grasa (g)</label>
+              <input id="goal-f-in" type="number" class="w-full bg-obsidian border border-steel rounded-lg px-2 py-1.5 text-xs font-mono text-white">
+            </div>
+          </div>
+          <button onclick="saveMacroGoals()" class="w-full py-1.5 rounded-lg bg-electric text-obsidian font-bold text-xs">Actualizar Metas</button>
+        </div>
+
+        <!-- Barras P / C / G -->
+        <div class="grid grid-cols-3 gap-2.5 pt-1">
+          <div class="bg-obsidian/70 rounded-xl p-2.5 border border-steel/40">
+            <div class="flex justify-between text-[11px] font-mono mb-1">
+              <span class="text-slate-400">PROT</span>
+              <span id="macro-p-text" class="text-emerald-400 font-bold">0/185g</span>
+            </div>
+            <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+              <div id="macro-p-bar" class="h-full bg-emerald-400 transition-all" style="width:0%"></div>
+            </div>
+          </div>
+          <div class="bg-obsidian/70 rounded-xl p-2.5 border border-steel/40">
+            <div class="flex justify-between text-[11px] font-mono mb-1">
+              <span class="text-slate-400">CARB</span>
+              <span id="macro-c-text" class="text-electricGlow font-bold">0/310g</span>
+            </div>
+            <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+              <div id="macro-c-bar" class="h-full bg-electricGlow transition-all" style="width:0%"></div>
+            </div>
+          </div>
+          <div class="bg-obsidian/70 rounded-xl p-2.5 border border-steel/40">
+            <div class="flex justify-between text-[11px] font-mono mb-1">
+              <span class="text-slate-400">GRASA</span>
+              <span id="macro-f-text" class="text-amber-400 font-bold">0/65g</span>
+            </div>
+            <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+              <div id="macro-f-bar" class="h-full bg-amber-400 transition-all" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selector de Comida (3 Comidas) -->
+      <div class="grid grid-cols-3 gap-2 bg-slateCard p-1.5 rounded-xl border border-steel/60">
+        <button onclick="setMeal('Desayuno')" id="meal-btn-Desayuno" class="meal-tab py-2 rounded-lg text-xs font-bold transition bg-electric text-obsidian">Desayuno</button>
+        <button onclick="setMeal('Almuerzo')" id="meal-btn-Almuerzo" class="meal-tab py-2 rounded-lg text-xs font-bold transition text-slate-400">Almuerzo</button>
+        <button onclick="setMeal('Once')" id="meal-btn-Once" class="meal-tab py-2 rounded-lg text-xs font-bold transition text-slate-400">Once</button>
+      </div>
+
+      <!-- Agregar Alimento Rápido o Crear Nuevo Alimento -->
+      <div class="bg-slateCard border border-steel/70 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-mono uppercase text-slate-300 font-bold">Registrar en <span id="current-meal-label" class="text-electricGlow">Desayuno</span></span>
+          <button onclick="toggleNewFoodForm()" class="text-xs font-semibold text-electricGlow">+ Crear Alimento</button>
+        </div>
+
+        <!-- Formulario para crear tu propio alimento (por cada 100g en crudo) -->
+        <div id="new-food-form" class="hidden bg-obsidian/90 border border-electric/30 rounded-xl p-3 space-y-2.5">
+          <p class="text-[11px] text-slate-300 font-semibold">Nuevo alimento (valores cada 100g en crudo):</p>
+          <input id="nf-name" type="text" placeholder="Nombre (ej. Pechuga pollo cruda)" class="w-full bg-slateCard border border-steel rounded-lg px-2.5 py-1.5 text-xs text-white">
+          <div class="grid grid-cols-4 gap-2">
+            <input id="nf-kcal" type="number" placeholder="Kcal" class="bg-slateCard border border-steel rounded-lg px-2 py-1.5 text-xs font-mono text-white">
+            <input id="nf-p" type="number" placeholder="Prot" class="bg-slateCard border border-steel rounded-lg px-2 py-1.5 text-xs font-mono text-white">
+            <input id="nf-c" type="number" placeholder="Carb" class="bg-slateCard border border-steel rounded-lg px-2 py-1.5 text-xs font-mono text-white">
+            <input id="nf-f" type="number" placeholder="Grasa" class="bg-slateCard border border-steel rounded-lg px-2 py-1.5 text-xs font-mono text-white">
+          </div>
+          <button onclick="createCustomFood()" class="w-full py-2 rounded-lg bg-electric text-obsidian font-bold text-xs">Guardar en mi lista</button>
+        </div>
+
+        <!-- Selector de alimento + gramos -->
+        <div class="flex gap-2">
+          <select id="food-select" class="flex-1 bg-obsidian border border-steel rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-electric"></select>
+          <div class="relative w-24">
+            <input id="food-grams" type="number" value="100" class="w-full bg-obsidian border border-steel rounded-xl pl-2.5 pr-6 py-2.5 text-xs font-mono font-bold text-white focus:outline-none focus:border-electric">
+            <span class="absolute right-2.5 top-2.5 text-xs font-mono text-slate-400">g</span>
+          </div>
+          <button onclick="addFoodEntry()" class="px-4 py-2.5 rounded-xl bg-electric text-obsidian font-extrabold text-xs active:scale-95 transition">Añadir</button>
+        </div>
+
+        <!-- Lista de alimentos agregados hoy -->
+        <div id="meal-entries-list" class="space-y-2 pt-1"></div>
+      </div>
+
+      <!-- Historial de Días Cerrados -->
+      <div class="bg-slateCard border border-steel/70 rounded-2xl p-4 space-y-2">
+        <span class="text-xs font-mono uppercase text-slate-400 font-bold">Historial Reciente</span>
+        <div id="macro-history-list" class="space-y-1.5 text-xs"></div>
+      </div>
+    </section>
+
+    <!-- ==================== PESTAÑA 2: GYM & PLIOMETRÍA ==================== -->
+    <section id="tab-gym" class="hidden space-y-4">
+      
+      <!-- Selector de Día (Martes a Viernes + Personalizable) -->
+      <div class="grid grid-cols-4 gap-1.5 bg-slateCard p-1.5 rounded-xl border border-steel/60">
+        <button onclick="setGymDay('Martes')" id="gym-btn-Martes" class="gym-tab py-2 rounded-lg text-xs font-bold transition bg-electric text-obsidian">Martes</button>
+        <button onclick="setGymDay('Miércoles')" id="gym-btn-Miércoles" class="gym-tab py-2 rounded-lg text-xs font-bold transition text-slate-400">Miérc.</button>
+        <button onclick="setGymDay('Jueves')" id="gym-btn-Jueves" class="gym-tab py-2 rounded-lg text-xs font-bold transition text-slate-400">Jueves</button>
+        <button onclick="setGymDay('Viernes')" id="gym-btn-Viernes" class="gym-tab py-2 rounded-lg text-xs font-bold transition text-slate-400">Viernes</button>
+      </div>
+
+      <!-- Cabecera del Día + Botón Agregar Ejercicio -->
+      <div class="bg-slateCard border border-steel/70 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <input id="gym-day-focus" type="text" onchange="updateGymDayFocus()" class="bg-transparent text-sm font-extrabold text-white border-b border-transparent focus:border-electric focus:outline-none w-full" placeholder="Enfoque del día (ej. Tren Inferior + Plio)">
+            <p class="text-[11px] text-slate-400">Toca el título arriba para renombrar este día</p>
+          </div>
+          <button onclick="toggleNewExerciseForm()" class="px-3 py-1.5 rounded-lg bg-electric/15 border border-electric/40 text-electricGlow text-xs font-bold shrink-0">+ Ejercicio</button>
+        </div>
+
+        <!-- Formulario Nuevo Ejercicio -->
+        <div id="new-ex-form" class="hidden bg-obsidian/90 border border-electric/30 rounded-xl p-3 space-y-2">
+          <input id="ex-name-in" type="text" placeholder="Nombre ejercicio (ej. Sentadilla Trasera)" class="w-full bg-slateCard border border-steel rounded-lg px-2.5 py-2 text-xs text-white">
+          <div class="flex gap-2">
+            <input id="ex-target-in" type="text" placeholder="Meta (ej. 4x5 @ 85%)" class="flex-1 bg-slateCard border border-steel rounded-lg px-2.5 py-2 text-xs text-white">
+            <input id="ex-rest-in" type="number" value="150" placeholder="Descanso (s)" class="w-24 bg-slateCard border border-steel rounded-lg px-2.5 py-2 text-xs font-mono text-white">
+          </div>
+          <button onclick="addExercise()" class="w-full py-2 rounded-lg bg-electric text-obsidian font-bold text-xs">Guardar Ejercicio</button>
+        </div>
+      </div>
+
+      <!-- Lista de Ejercicios del Día -->
+      <div id="gym-exercises-list" class="space-y-3"></div>
+    </section>
+
+    <!-- ==================== PESTAÑA 3: SALTO VERTICAL ==================== -->
+    <section id="tab-jump" class="hidden space-y-4">
+      
+      <!-- Meta Configurable -->
+      <div class="bg-slateCard border border-steel/70 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-xs font-mono uppercase text-slate-400">Progreso Salto Vertical</span>
+            <div class="flex items-baseline gap-1.5">
+              <span id="jump-best-display" class="text-3xl font-mono font-extrabold text-white tabular-nums">--</span>
+              <span class="text-xs font-mono text-slate-400">cm / Meta:</span>
+              <input id="jump-goal-input" type="number" onchange="updateJumpGoal()" class="w-14 bg-obsidian border border-steel rounded px-1.5 py-0.5 text-xs font-mono font-bold text-amber-400 text-center">
+              <span class="text-xs font-mono text-slate-400">cm</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="w-full h-2.5 bg-obsidian rounded-full overflow-hidden">
+          <div id="jump-progress-bar" class="h-full bg-gradient-to-r from-electric to-amber-400 transition-all duration-500" style="width: 0%"></div>
+        </div>
+
+        <!-- Récords por Modalidad -->
+        <div class="grid grid-cols-3 gap-2 pt-1">
+          <div class="bg-obsidian/80 border border-steel/50 rounded-xl p-2.5 text-center">
+            <span class="text-[10px] font-mono text-slate-400 block">SPIKE JUMP</span>
+            <span id="pr-spike" class="text-base font-mono font-extrabold text-electricGlow">--</span>
+          </div>
+          <div class="bg-obsidian/80 border border-steel/50 rounded-xl p-2.5 text-center">
+            <span class="text-[10px] font-mono text-slate-400 block">CMJ (SIN IMP.)</span>
+            <span id="pr-cmj" class="text-base font-mono font-extrabold text-emerald-400">--</span>
+          </div>
+          <div class="bg-obsidian/80 border border-steel/50 rounded-xl p-2.5 text-center">
+            <span class="text-[10px] font-mono text-slate-400 block">SQUAT JUMP</span>
+            <span id="pr-sj" class="text-base font-mono font-extrabold text-amber-400">--</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Registrar Nueva Marca -->
+      <div class="bg-slateCard border border-steel/70 rounded-2xl p-4 space-y-3">
+        <span class="text-xs font-mono uppercase text-slate-300 font-bold">Registrar Medición</span>
+        <div class="grid grid-cols-3 gap-2">
+          <select id="jump-type-in" class="col-span-1 bg-obsidian border border-steel rounded-xl px-2.5 py-2.5 text-xs text-white">
+            <option value="Spike">Spike Jump</option>
+            <option value="CMJ">CMJ</option>
+            <option value="SJ">Squat Jump</option>
+          </select>
+          <input id="jump-cm-in" type="number" step="0.5" placeholder="Salto (cm)" class="bg-obsidian border border-steel rounded-xl px-3 py-2.5 text-xs font-mono font-bold text-white">
+          <button onclick="addJumpRecord()" class="rounded-xl bg-electric text-obsidian font-extrabold text-xs active:scale-95 transition">Guardar</button>
+        </div>
+
+        <!-- Calculadora Alcance sobre la Red (2.43 m) -->
+        <div class="pt-2 border-t border-steel/50 flex items-center justify-between text-xs">
+          <div class="flex items-center gap-1.5">
+            <span class="text-slate-400">Alcance parado (cm):</span>
+            <input id="standing-reach-in" type="number" value="224" oninput="calcNetReach()" class="w-16 bg-obsidian border border-steel rounded-lg px-2 py-1 font-mono text-white text-center">
+          </div>
+          <div class="text-right">
+            <span class="text-slate-400 block text-[10px]">Sobre red (243 cm)</span>
+            <span id="net-clearance-out" class="font-mono font-bold text-emerald-400">--</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Historial de Saltos -->
+      <div class="bg-slateCard border border-steel/70 rounded-2xl p-4 space-y-2">
+        <span class="text-xs font-mono uppercase text-slate-400 font-bold">Historial de Mediciones</span>
+        <div id="jump-history-list" class="space-y-1.5 text-xs"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- TEMPORIZADOR DE DESCANSO FLOTANTE -->
+  <div id="rest-timer-bar" class="hidden fixed bottom-20 left-4 right-4 max-w-md mx-auto bg-slateCard/95 backdrop-blur-md border border-electric rounded-2xl px-4 py-3 shadow-2xl flex items-center justify-between z-40">
+    <div class="flex items-center gap-3">
+      <span class="w-2.5 h-2.5 rounded-full bg-electricGlow animate-ping"></span>
+      <div>
+        <span class="text-[10px] font-mono uppercase text-slate-400 block">Descanso Activo</span>
+        <span id="timer-display" class="text-xl font-mono font-extrabold text-white tabular-nums">02:30</span>
+      </div>
+    </div>
+    <div class="flex gap-2">
+      <button onclick="adjustTimer(30)" class="px-2.5 py-1.5 rounded-lg bg-obsidian border border-steel text-xs font-mono text-slate-300">+30s</button>
+      <button onclick="stopTimer()" class="px-3 py-1.5 rounded-lg bg-rose-500/20 border border-rose-500/40 text-xs font-bold text-rose-300">Parar</button>
+    </div>
+  </div>
+
+  <!-- BARRA DE NAVEGACIÓN INFERIOR (4 PESTAÑAS) -->
+  <nav class="fixed bottom-0 left-0 right-0 z-30 bg-obsidian/95 backdrop-blur-md border-t border-steel/70 px-2 py-2">
+    <div class="max-w-md mx-auto grid grid-cols-4 gap-1">
+      <button onclick="switchTab('home')" id="nav-home" class="nav-btn flex flex-col items-center py-1.5 rounded-xl text-electricGlow bg-electric/10 transition">
+        <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        <span class="text-[10px] font-bold">Inicio</span>
+      </button>
+      <button onclick="switchTab('macros')" id="nav-macros" class="nav-btn flex flex-col items-center py-1.5 rounded-xl text-slate-400 transition">
+        <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        <span class="text-[10px] font-bold">Macros</span>
+      </button>
+      <button onclick="switchTab('gym')" id="nav-gym" class="nav-btn flex flex-col items-center py-1.5 rounded-xl text-slate-400 transition">
+        <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        <span class="text-[10px] font-bold">Gym/Plio</span>
+      </button>
+      <button onclick="switchTab('jump')" id="nav-jump" class="nav-btn flex flex-col items-center py-1.5 rounded-xl text-slate-400 transition">
+        <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+        <span class="text-[10px] font-bold">Salto</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MODAL RESPALDO JSON -->
+  <div id="backup-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slateCard border border-steel rounded-2xl p-5 max-w-sm w-full space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-extrabold text-white">Respaldo de Datos</h3>
+        <button onclick="closeBackupModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+      <p class="text-xs text-slate-400">Todos tus datos se guardan en tu teléfono. Exporta una copia periódicamente para no perder nada.</p>
+      <button onclick="exportData()" class="w-full py-2.5 rounded-xl bg-electric text-obsidian font-bold text-xs">Descargar Respaldo (.json)</button>
+      <label class="block w-full py-2.5 rounded-xl bg-obsidian border border-steel text-center text-xs font-semibold text-slate-300 cursor-pointer">
+        Cargar Respaldo (.json)
+        <input type="file" accept=".json" onchange="importData(event)" class="hidden">
+      </label>
+    </div>
+  </div>
+
+  <script>
+    // ==================== ESTADO INICIAL EDITABLE ====================
+    const DEFAULT_STATE = {
+      schedule: {
+        0: { title: 'Domingo — Descanso Activo', note: 'Recuperación y movilidad' },
+        1: { title: 'Lunes — Vóleibol Club', note: 'Entrenamiento técnico/táctico en cancha' },
+        2: { title: 'Martes — Gym Día 1', note: 'Fuerza Tren Inferior + Pliometría' },
+        3: { title: 'Miércoles — Gym Día 2', note: 'Tren Superior + Core' },
+        4: { title: 'Jueves — Gym Día 3 + Vóley', note: 'Potencia Explosiva + Club' },
+        5: { title: 'Viernes — Gym Día 4', note: 'Tren Superior / Accesorios' },
+        6: { title: 'Sábado — Vóleibol Club', note: 'Entrenamiento / Partido' }
+      },
+      habits: [
+        { id: 1, text: 'Pesar todas las comidas en crudo', done: false },
+        { id: 2, text: 'Cumplir meta de proteína diaria', done: false },
+        { id: 3, text: 'Completar entrenamiento del día', done: false }
+      ],
+      notes: '',
+      macroGoals: { kcal: 2550, p: 185, c: 310, f: 65 },
+      foods: [
+        { id: 'f1', name: 'Pechuga de pollo (cruda)', kcal: 120, p: 22.5, c: 0, f: 2.6 },
+        { id: 'f2', name: 'Churrasco vacuno magro (crudo)', kcal: 135, p: 21.0, c: 0, f: 5.0 },
+        { id: 'f3', name: 'Arroz blanco (crudo)', kcal: 358, p: 7.0, c: 79.0, f: 0.7 },
+        { id: 'f4', name: 'Papas (crudas para Air Fryer)', kcal: 77, p: 2.0, c: 17.5, f: 0.1 },
+        { id: 'f5', name: 'Avena tradicional', kcal: 375, p: 13.0, c: 60.0, f: 7.0 },
+        { id: 'f6', name: 'Semillas de chía', kcal: 486, p: 16.5, c: 42.0, f: 30.7 },
+        { id: 'f7', name: 'Leche semidescremada (ml)', kcal: 46, p: 3.2, c: 4.8, f: 1.5 },
+        { id: 'f8', name: 'Huevo entero (1 unid ≈ 60g)', kcal: 143, p: 12.6, c: 0.7, f: 9.5 },
+        { id: 'f9', name: 'Pan marraqueta / hallulla', kcal: 280, p: 8.5, c: 56.0, f: 2.0 }
+      ],
+      currentMeal: 'Desayuno',
+      todayEntries: [],
+      macroHistory: [],
+      currentGymDay: 'Martes',
+      gymDays: {
+        'Martes': {
+          focus: 'Tren Inferior Fuerza + Pliometría',
+          exercises: [
+            { id: 'e1', name: 'Drop Jumps / Saltos al cajón', target: '4x4 reps', rest: 120, logs: [] },
+            { id: 'e2', name: 'Sentadilla Trasera (Back Squat)', target: '4x5 @ 82%', rest: 180, logs: [] }
+          ]
+        },
+        'Miércoles': {
+          focus: 'Tren Superior Empuje / Tracción',
+          exercises: [
+            { id: 'e3', name: 'Press Banca Plano', target: '4x6', rest: 150, logs: [] },
+            { id: 'e4', name: 'Dominadas Lastradas', target: '4x6', rest: 150, logs: [] }
+          ]
+        },
+        'Jueves': {
+          focus: 'Potencia Explosiva + Vóley',
+          exercises: [
+            { id: 'e5', name: 'Squat Jump (Salto estático)', target: '4x5', rest: 120, logs: [] }
+          ]
+        },
+        'Viernes': {
+          focus: 'Tren Superior + Estabilidad',
+          exercises: [
+            { id: 'e6', name: 'Press Militar', target: '3x8', rest: 120, logs: [] }
+          ]
+        }
+      },
+      jumpGoal: 100,
+      standingReach: 224,
+      jumpRecords: []
+    };
+
+    let state = JSON.parse(localStorage.getItem('reinaldo_tracker_v2')) || DEFAULT_STATE;
+
+    function saveState() {
+      localStorage.setItem('reinaldo_tracker_v2', JSON.stringify(state));
+      renderHome();
+    }
+
+    // ==================== NAVEGACIÓN Y FECHA ====================
+    function initHeader() {
+      const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+      const now = new Date();
+      document.getElementById('header-date').textContent = `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+    }
+
+    function switchTab(tab) {
+      ['home', 'macros', 'gym', 'jump'].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tab);
+        const btn = document.getElementById(`nav-${t}`);
+        if (t === tab) {
+          btn.classList.add('text-electricGlow', 'bg-electric/10');
+          btn.classList.remove('text-slate-400');
+        } else {
+          btn.classList.remove('text-electricGlow', 'bg-electric/10');
+          btn.classList.add('text-slate-400');
+        }
+      });
+      if (tab === 'home') renderHome();
+      if (tab === 'macros') renderMacros();
+      if (tab === 'gym') renderGym();
+      if (tab === 'jump') renderJump();
+    }
+
+    // ==================== LÓGICA PESTAÑA INICIO ====================
+    function renderHome() {
+      const dayIdx = new Date().getDay();
+      const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      const todayPlan = state.schedule[dayIdx] || { title: days[dayIdx], note: '' };
+
+      document.getElementById('home-day-badge').textContent = `Hoy • ${days[dayIdx]}`;
+      document.getElementById('home-today-title').textContent = todayPlan.title;
+      document.getElementById('home-today-note').textContent = todayPlan.note;
+
+      // Resumen Macros
+      const totals = getMacroTotals();
+      document.getElementById('home-kcal-val').textContent = Math.round(totals.kcal);
+      document.getElementById('home-kcal-goal').textContent = `/ ${state.macroGoals.kcal}`;
+      const kcalPct = Math.min(100, (totals.kcal / state.macroGoals.kcal) * 100);
+      document.getElementById('home-kcal-bar').style.width = `${kcalPct}%`;
+      document.getElementById('home-prot-text').textContent = `${Math.round(totals.p)}g / ${state.macroGoals.p}g Prot`;
+
+      // Resumen Salto
+      const maxJump = state.jumpRecords.length ? Math.max(...state.jumpRecords.map(r => r.cm)) : 0;
+      document.getElementById('home-jump-val').textContent = maxJump > 0 ? maxJump : '--';
+      document.getElementById('home-jump-goal').textContent = `/ ${state.jumpGoal} cm`;
+      const jumpPct = maxJump > 0 ? Math.min(100, (maxJump / state.jumpGoal) * 100) : 0;
+      document.getElementById('home-jump-bar').style.width = `${jumpPct}%`;
+      document.getElementById('home-jump-diff').textContent = maxJump > 0
+        ? (maxJump >= state.jumpGoal ? '¡Meta alcanzada!' : `Faltan ${(state.jumpGoal - maxJump).toFixed(1)} cm`)
+        : 'Registra tu marca';
+
+      // Checklist
+      const list = document.getElementById('checklist-items');
+      list.innerHTML = state.habits.map(h => `
+        <div class="flex items-center justify-between bg-obsidian/70 border border-steel/50 rounded-xl px-3 py-2">
+          <button onclick="toggleHabit(${h.id})" class="flex items-center gap-2.5 text-left flex-1">
+            <span class="w-4 h-4 rounded flex items-center justify-center border ${h.done ? 'bg-emerald-500 border-emerald-500 text-obsidian font-bold' : 'border-slate-500'} text-[10px]">
+              ${h.done ? '✓' : ''}
+            </span>
+            <span class="text-xs ${h.done ? 'line-through text-slate-500' : 'text-slate-200'}">${h.text}</span>
+          </button>
+          <button onclick="deleteHabit(${h.id})" class="text-slate-500 hover:text-rose-400 text-xs px-1">✕</button>
+        </div>
+      `).join('');
+
+      document.getElementById('home-notes').value = state.notes || '';
+    }
+
+    function toggleScheduleEditor() {
+      const el = document.getElementById('schedule-editor');
+      el.classList.toggle('hidden');
+      if (!el.classList.contains('hidden')) {
+        const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+        document.getElementById('schedule-inputs').innerHTML = [1, 2, 3, 4, 5, 6, 0].map(d => `
+          <div class="bg-obsidian/80 p-2 rounded-lg border border-steel/50 space-y-1">
+            <span class="text-[10px] font-mono text-electricGlow font-bold">${days[d]}</span>
+            <input id="sched-title-${d}" type="text" value="${state.schedule[d].title}" class="w-full bg-slateCard border border-steel rounded px-2 py-1 text-xs text-white">
+            <input id="sched-note-${d}" type="text" value="${state.schedule[d].note}" class="w-full bg-slateCard border border-steel rounded px-2 py-1 text-[11px] text-slate-300">
+          </div>
+        `).join('');
+      }
+    }
+
+    function saveSchedule() {
+      [0, 1, 2, 3, 4, 5, 6].forEach(d => {
+        state.schedule[d] = {
+          title: document.getElementById(`sched-title-${d}`).value,
+          note: document.getElementById(`sched-note-${d}`).value
+        };
+      });
+      saveState();
+      document.getElementById('schedule-editor').classList.add('hidden');
+    }
+
+    function toggleHabit(id) {
+      const h = state.habits.find(x => x.id === id);
+      if (h) h.done = !h.done;
+      saveState();
+    }
+
+    function addHabit() {
+      const input = document.getElementById('new-habit-input');
+      if (!input.value.trim()) return;
+      state.habits.push({ id: Date.now(), text: input.value.trim(), done: false });
+      input.value = '';
+      saveState();
+    }
+
+    function deleteHabit(id) {
+      state.habits = state.habits.filter(x => x.id !== id);
+      saveState();
+    }
+
+    function resetDailyChecklist() {
+      state.habits.forEach(h => h.done = false);
+      saveState();
+    }
+
+    function saveNotes() {
+      state.notes = document.getElementById('home-notes').value;
+      localStorage.setItem('reinaldo_tracker_v2', JSON.stringify(state));
+      const badge = document.getElementById('notes-saved-badge');
+      badge.classList.remove('opacity-0');
+      setTimeout(() => badge.classList.add('opacity-0'), 1200);
+    }
+
+    // ==================== LÓGICA MACROS ====================
+    function getMacroTotals() {
+      return state.todayEntries.reduce((acc, item) => {
+        acc.kcal += item.kcal;
+        acc.p += item.p;
+        acc.c += item.c;
+        acc.f += item.f;
+        return acc;
+      }, { kcal: 0, p: 0, c: 0, f: 0 });
+    }
+
+    function renderMacros() {
+      const totals = getMacroTotals();
+      const g = state.macroGoals;
+      document.getElementById('macro-total-kcal').textContent = Math.round(totals.kcal);
+      document.getElementById('macro-goal-kcal-label').textContent = g.kcal;
+      document.getElementById('macro-p-text').textContent = `${Math.round(totals.p)}/${g.p}g`;
+      document.getElementById('macro-c-text').textContent = `${Math.round(totals.c)}/${g.c}g`;
+      document.getElementById('macro-f-text').textContent = `${Math.round(totals.f)}/${g.f}g`;
+
+      document.getElementById('macro-p-bar').style.width = `${Math.min(100, (totals.p / g.p) * 100)}%`;
+      document.getElementById('macro-c-bar').style.width = `${Math.min(100, (totals.c / g.c) * 100)}%`;
+      document.getElementById('macro-f-bar').style.width = `${Math.min(100, (totals.f / g.f) * 100)}%`;
+
+      document.getElementById('current-meal-label').textContent = state.currentMeal;
+
+      const select = document.getElementById('food-select');
+      select.innerHTML = state.foods.map(f => `<option value="${f.id}">${f.name} (${f.kcal} kcal/100g)</option>`).join('');
+
+      const mealItems = state.todayEntries.filter(e => e.meal === state.currentMeal);
+      const list = document.getElementById('meal-entries-list');
+      list.innerHTML = mealItems.length ? mealItems.map(item => `
+        <div class="flex items-center justify-between bg-obsidian/80 border border-steel/50 rounded-xl px-3 py-2 text-xs">
+          <div>
+            <span class="font-bold text-white">${item.name}</span>
+            <span class="text-slate-400 font-mono block text-[11px]">${item.grams}g • ${Math.round(item.kcal)} kcal (${Math.round(item.p)}P / ${Math.round(item.c)}C / ${Math.round(item.f)}G)</span>
+          </div>
+          <button onclick="removeFoodEntry(${item.id})" class="text-slate-500 hover:text-rose-400 px-2">✕</button>
+        </div>
+      `).join('') : `<p class="text-xs text-slate-500 text-center py-2">Sin alimentos en ${state.currentMeal}</p>`;
+
+      const hist = document.getElementById('macro-history-list');
+      hist.innerHTML = state.macroHistory.length ? state.macroHistory.slice(0, 7).map(h => `
+        <div class="flex justify-between bg-obsidian/60 px-3 py-1.5 rounded-lg border border-steel/40 font-mono text-[11px]">
+          <span class="text-slate-400">${h.date}</span>
+          <span class="text-white font-bold">${h.kcal} kcal • ${h.p}g Prot</span>
+        </div>
+      `).join('') : `<p class="text-slate-500 text-[11px]">Aún no hay días cerrados.</p>`;
+    }
+
+    function setMeal(meal) {
+      state.currentMeal = meal;
+      ['Desayuno', 'Almuerzo', 'Once'].forEach(m => {
+        const btn = document.getElementById(`meal-btn-${m}`);
+        if (m === meal) {
+          btn.classList.add('bg-electric', 'text-obsidian');
+          btn.classList.remove('text-slate-400');
+        } else {
+          btn.classList.remove('bg-electric', 'text-obsidian');
+          btn.classList.add('text-slate-400');
+        }
+      });
+      renderMacros();
+    }
+
+    function toggleMacroGoalsEditor() {
+      const el = document.getElementById('macro-goals-editor');
+      el.classList.toggle('hidden');
+      document.getElementById('goal-kcal-in').value = state.macroGoals.kcal;
+      document.getElementById('goal-p-in').value = state.macroGoals.p;
+      document.getElementById('goal-c-in').value = state.macroGoals.c;
+      document.getElementById('goal-f-in').value = state.macroGoals.f;
+    }
+
+    function saveMacroGoals() {
+      state.macroGoals = {
+        kcal: Number(document.getElementById('goal-kcal-in').value) || 2550,
+        p: Number(document.getElementById('goal-p-in').value) || 185,
+        c: Number(document.getElementById('goal-c-in').value) || 310,
+        f: Number(document.getElementById('goal-f-in').value) || 65
+      };
+      saveState();
+      renderMacros();
+      document.getElementById('macro-goals-editor').classList.add('hidden');
+    }
+
+    function toggleNewFoodForm() {
+      document.getElementById('new-food-form').classList.toggle('hidden');
+    }
+
+    function createCustomFood() {
+      const name = document.getElementById('nf-name').value.trim();
+      const kcal = Number(document.getElementById('nf-kcal').value);
+      const p = Number(document.getElementById('nf-p').value) || 0;
+      const c = Number(document.getElementById('nf-c').value) || 0;
+      const f = Number(document.getElementById('nf-f').value) || 0;
+      if (!name || isNaN(kcal)) return;
+
+      state.foods.unshift({ id: 'f' + Date.now(), name, kcal, p, c, f });
+      document.getElementById('nf-name').value = '';
+      document.getElementById('nf-kcal').value = '';
+      document.getElementById('nf-p').value = '';
+      document.getElementById('nf-c').value = '';
+      document.getElementById('nf-f').value = '';
+      document.getElementById('new-food-form').classList.add('hidden');
+      saveState();
+      renderMacros();
+    }
+
+    function addFoodEntry() {
+      const foodId = document.getElementById('food-select').value;
+      const grams = Number(document.getElementById('food-grams').value);
+      const food = state.foods.find(f => f.id === foodId);
+      if (!food || grams <= 0) return;
+
+      const factor = grams / 100;
+      state.todayEntries.push({
+        id: Date.now(),
+        meal: state.currentMeal,
+        name: food.name,
+        grams,
+        kcal: food.kcal * factor,
+        p: food.p * factor,
+        c: food.c * factor,
+        f: food.f * factor
+      });
+      saveState();
+      renderMacros();
+    }
+
+    function removeFoodEntry(id) {
+      state.todayEntries = state.todayEntries.filter(e => e.id !== id);
+      saveState();
+      renderMacros();
+    }
+
+    function closeMacroDay() {
+      const t = getMacroTotals();
+      if (t.kcal === 0) return;
+      const now = new Date();
+      state.macroHistory.unshift({
+        date: `${now.getDate()}/${now.getMonth() + 1}`,
+        kcal: Math.round(t.kcal),
+        p: Math.round(t.p)
+      });
+      state.todayEntries = [];
+      saveState();
+      renderMacros();
+    }
+
+    // ==================== LÓGICA GYM & PLIO ====================
+    function setGymDay(day) {
+      state.currentGymDay = day;
+      ['Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(d => {
+        const btn = document.getElementById(`gym-btn-${d}`);
+        if (d === day) {
+          btn.classList.add('bg-electric', 'text-obsidian');
+          btn.classList.remove('text-slate-400');
+        } else {
+          btn.classList.remove('bg-electric', 'text-obsidian');
+          btn.classList.add('text-slate-400');
+        }
+      });
+      renderGym();
+    }
+
+    function renderGym() {
+      const dayData = state.gymDays[state.currentGymDay];
+      document.getElementById('gym-day-focus').value = dayData.focus;
+
+      const container = document.getElementById('gym-exercises-list');
+      container.innerHTML = dayData.exercises.map(ex => {
+        const best1RM = ex.logs.length ? Math.max(...ex.logs.map(l => l.weight * (1 + l.reps / 30))) : 0;
+        return `
+          <div class="bg-slateCard border border-steel/70 rounded-2xl p-4 space-y-3">
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <h4 class="text-sm font-extrabold text-white">${ex.name}</h4>
+                <span class="text-xs font-mono text-electricGlow">${ex.target} • Descanso ${ex.rest}s</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button onclick="startTimer(${ex.rest})" class="px-2.5 py-1 rounded-lg bg-electric/15 border border-electric/40 text-electricGlow font-mono text-xs">⏱ ${ex.rest}s</button>
+                <button onclick="deleteExercise('${ex.id}')" class="text-slate-500 hover:text-rose-400 px-1.5 text-xs">✕</button>
+              </div>
+            </div>
+
+            ${best1RM > 0 ? `<div class="text-[11px] font-mono text-emerald-400">1RM Estimado Máx: ${best1RM.toFixed(1)} kg</div>` : ''}
+
+            <div class="flex gap-2">
+              <input id="w-${ex.id}" type="number" step="0.5" placeholder="Kg" class="w-20 bg-obsidian border border-steel rounded-xl px-2.5 py-2 text-xs font-mono text-white text-center">
+              <input id="r-${ex.id}" type="number" placeholder="Reps" class="w-20 bg-obsidian border border-steel rounded-xl px-2.5 py-2 text-xs font-mono text-white text-center">
+              <button onclick="logSet('${ex.id}', ${ex.rest})" class="flex-1 rounded-xl bg-electric text-obsidian font-extrabold text-xs active:scale-95 transition">+ Serie</button>
+            </div>
+
+            <div class="space-y-1">
+              ${ex.logs.slice(-4).map((l, idx) => `
+                <div class="flex justify-between items-center bg-obsidian/70 px-3 py-1.5 rounded-lg text-xs font-mono">
+                  <span class="text-slate-400">Serie ${idx + 1}: <strong class="text-white">${l.weight} kg</strong> × ${l.reps} reps</span>
+                  <button onclick="removeSet('${ex.id}', ${l.id})" class="text-slate-600 hover:text-rose-400">✕</button>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateGymDayFocus() {
+      state.gymDays[state.currentGymDay].focus = document.getElementById('gym-day-focus').value;
+      saveState();
+    }
+
+    function toggleNewExerciseForm() {
+      document.getElementById('new-ex-form').classList.toggle('hidden');
+    }
+
+    function addExercise() {
+      const name = document.getElementById('ex-name-in').value.trim();
+      const target = document.getElementById('ex-target-in').value.trim() || '3x8';
+      const rest = Number(document.getElementById('ex-rest-in').value) || 120;
+      if (!name) return;
+
+      state.gymDays[state.currentGymDay].exercises.push({
+        id: 'ex' + Date.now(),
+        name,
+        target,
+        rest,
+        logs: []
+      });
+      document.getElementById('ex-name-in').value = '';
+      document.getElementById('ex-target-in').value = '';
+      document.getElementById('new-ex-form').classList.add('hidden');
+      saveState();
+      renderGym();
+    }
+
+    function deleteExercise(exId) {
+      const dayData = state.gymDays[state.currentGymDay];
+      dayData.exercises = dayData.exercises.filter(e => e.id !== exId);
+      saveState();
+      renderGym();
+    }
+
+    function logSet(exId, restSec) {
+      const w = Number(document.getElementById(`w-${exId}`).value);
+      const r = Number(document.getElementById(`r-${exId}`).value);
+      if (r <= 0) return;
+
+      const ex = state.gymDays[state.currentGymDay].exercises.find(e => e.id === exId);
+      ex.logs.push({ id: Date.now(), weight: w || 0, reps: r });
+      saveState();
+      renderGym();
+      startTimer(restSec);
+    }
+
+    function removeSet(exId, logId) {
+      const ex = state.gymDays[state.currentGymDay].exercises.find(e => e.id === exId);
+      ex.logs = ex.logs.filter(l => l.id !== logId);
+      saveState();
+      renderGym();
+    }
+
+    // ==================== TEMPORIZADOR ====================
+    let timerInterval = null;
+    let timerRemaining = 0;
+
+    function startTimer(seconds) {
+      clearInterval(timerInterval);
+      timerRemaining = seconds;
+      document.getElementById('rest-timer-bar').classList.remove('hidden');
+      updateTimerUI();
+      timerInterval = setInterval(() => {
+        timerRemaining--;
+        updateTimerUI();
+        if (timerRemaining <= 0) {
+          clearInterval(timerInterval);
+          beep();
+        }
+      }, 1000);
+    }
+
+    function adjustTimer(sec) {
+      timerRemaining += sec;
+      updateTimerUI();
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+      document.getElementById('rest-timer-bar').classList.add('hidden');
+    }
+
+    function updateTimerUI() {
+      const m = String(Math.max(0, Math.floor(timerRemaining / 60))).padStart(2, '0');
+      const s = String(Math.max(0, timerRemaining % 60)).padStart(2, '0');
+      document.getElementById('timer-display').textContent = `${m}:${s}`;
+    }
+
+    function beep() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
+        osc.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.35);
+      } catch (e) {}
+    }
+
+    // ==================== LÓGICA SALTO VERTICAL ====================
+    function renderJump() {
+      document.getElementById('jump-goal-input').value = state.jumpGoal;
+      document.getElementById('standing-reach-in').value = state.standingReach || 224;
+
+      const byType = (t) => {
+        const arr = state.jumpRecords.filter(r => r.type === t);
+        return arr.length ? Math.max(...arr.map(r => r.cm)) : null;
+      };
+
+      const spike = byType('Spike');
+      const cmj = byType('CMJ');
+      const sj = byType('SJ');
+      const overall = state.jumpRecords.length ? Math.max(...state.jumpRecords.map(r => r.cm)) : null;
+
+      document.getElementById('pr-spike').textContent = spike ? `${spike} cm` : '--';
+      document.getElementById('pr-cmj').textContent = cmj ? `${cmj} cm` : '--';
+      document.getElementById('pr-sj').textContent = sj ? `${sj} cm` : '--';
+      document.getElementById('jump-best-display').textContent = overall ? overall : '--';
+
+      const pct = overall ? Math.min(100, (overall / state.jumpGoal) * 100) : 0;
+      document.getElementById('jump-progress-bar').style.width = `${pct}%`;
+
+      calcNetReach();
+
+      const hist = document.getElementById('jump-history-list');
+      hist.innerHTML = state.jumpRecords.length ? state.jumpRecords.slice().reverse().map(r => `
+        <div class="flex justify-between items-center bg-obsidian/70 border border-steel/40 px-3 py-2 rounded-xl font-mono text-xs">
+          <div>
+            <span class="text-electricGlow font-bold">${r.type}</span>
+            <span class="text-slate-400 ml-2">${r.date}</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-white font-extrabold">${r.cm} cm</span>
+            <button onclick="deleteJump(${r.id})" class="text-slate-600 hover:text-rose-400">✕</button>
+          </div>
+        </div>
+      `).join('') : `<p class="text-slate-500 text-xs text-center py-2">Registra tu primer salto arriba.</p>`;
+    }
+
+    function updateJumpGoal() {
+      state.jumpGoal = Number(document.getElementById('jump-goal-input').value) || 100;
+      saveState();
+      renderJump();
+    }
+
+    function addJumpRecord() {
+      const type = document.getElementById('jump-type-in').value;
+      const cm = Number(document.getElementById('jump-cm-in').value);
+      if (cm <= 0) return;
+
+      const now = new Date();
+      state.jumpRecords.push({
+        id: Date.now(),
+        type,
+        cm,
+        date: `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`
+      });
+      document.getElementById('jump-cm-in').value = '';
+      saveState();
+      renderJump();
+    }
+
+    function deleteJump(id) {
+      state.jumpRecords = state.jumpRecords.filter(r => r.id !== id);
+      saveState();
+      renderJump();
+    }
+
+    function calcNetReach() {
+      const reach = Number(document.getElementById('standing-reach-in').value) || 0;
+      state.standingReach = reach;
+      localStorage.setItem('reinaldo_tracker_v2', JSON.stringify(state));
+
+      const spikeRecords = state.jumpRecords.filter(r => r.type === 'Spike');
+      const bestJump = spikeRecords.length
+        ? Math.max(...spikeRecords.map(r => r.cm))
+        : (state.jumpRecords.length ? Math.max(...state.jumpRecords.map(r => r.cm)) : 0);
+
+      const out = document.getElementById('net-clearance-out');
+      if (reach > 0 && bestJump > 0) {
+        const totalReach = reach + bestJump;
+        const diff = totalReach - 243;
+        out.textContent = `${totalReach} cm (${diff >= 0 ? '+' : ''}${diff.toFixed(1)} cm)`;
+      } else {
+        out.textContent = '--';
+      }
+    }
+
+    // ==================== RESPALDO JSON ====================
+    function openBackupModal() { document.getElementById('backup-modal').classList.remove('hidden'); }
+    function closeBackupModal() { document.getElementById('backup-modal').classList.add('hidden'); }
+
+    function exportData() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `reinaldo-tracker-backup-${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          state = JSON.parse(e.target.result);
+          saveState();
+          closeBackupModal();
+          switchTab('home');
+        } catch (err) {
+          alert('Archivo inválido');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // INICIALIZACIÓN
+    initHeader();
+    switchTab('home');
+  </script>
+</body>
+</html>
