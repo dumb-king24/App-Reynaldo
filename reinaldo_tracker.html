@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#090d16">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>REINALDO // TRACKER</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & JetBrains Mono para métricas técnicas -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        obsidian: '#090d16',
+                        slateDark: '#111827',
+                        slateCard: '#161f32',
+                        steel: '#26334d',
+                        electric: '#0ea5e9',
+                        electricGlow: '#38bdf8',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Ajustes nativos móviles */
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #090d16;
+            color: #f8fafc;
+            overscroll-behavior-y: contain;
+            user-select: none;
+        }
+        input, select, textarea {
+            user-select: auto;
+        }
+        /* Ocultar barras de scroll manteniendo funcionalidad */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Animaciones suaves */
+        .tab-content {
+            animation: fadeIn 0.2s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Estilo custom para inputs numéricos */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased min-h-screen flex flex-col bg-obsidian text-slate-100 pb-24">
+
+    <!-- NOTIFICACIÓN TOAST FLOTANTE -->
+    <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[90%] max-w-md flex flex-col gap-2"></div>
+
+    <!-- HEADER SUPERIOR FIJO -->
+    <header class="sticky top-0 z-30 bg-obsidian/90 backdrop-blur-md border-b border-steel/60 px-4 py-3 flex items-center justify-between">
+        <div>
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-electric animate-pulse"></span>
+                <h1 class="font-mono font-extrabold text-base tracking-wider text-white">REINALDO <span class="text-electric">//</span> TRACKER</h1>
+            </div>
+            <p class="text-[11px] text-slate-400 font-mono mt-0.5">1.74m • 83kg • VÓLEIBOL & POTENCIA</p>
+        </div>
+        <button onclick="openBackupModal()" aria-label="Respaldo y Configuración" class="p-2.5 rounded-xl bg-slateCard border border-steel text-slate-300 hover:text-electric hover:border-electric transition active:scale-95 flex items-center gap-1.5">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+            <span class="text-xs font-semibold hidden sm:inline">Datos</span>
+        </button>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="flex-1 w-full max-w-lg mx-auto px-4 pt-4">
+
+        <!-- ========================================== -->
+        <!-- PESTAÑA 1: MACROS                          -->
+        <!-- ========================================== -->
+        <section id="tab-macros" class="tab-content space-y-5">
+            
+            <!-- Tarjeta Resumen Diario -->
+            <div class="bg-slateCard border border-steel/80 rounded-2xl p-4 shadow-lg">
+                <div class="flex items-center justify-between mb-3">
+                    <div>
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Balance Diario</span>
+                        <div class="flex items-baseline gap-1.5 mt-0.5">
+                            <span id="cal-consumed" class="font-mono text-2xl font-extrabold text-white">0</span>
+                            <span class="text-xs text-slate-400 font-mono">/ <span id="cal-target-display">2550</span> kcal</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="openMacroGoalsModal()" class="p-2 rounded-xl bg-obsidian/70 border border-steel text-slate-300 hover:text-electric active:scale-95" title="Editar Objetivos">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        </button>
+                        <button onclick="openMacroHistoryModal()" class="p-2 rounded-xl bg-obsidian/70 border border-steel text-slate-300 hover:text-electric active:scale-95" title="Historial">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Barra Principal Calorías -->
+                <div class="w-full h-3 bg-obsidian rounded-full overflow-hidden border border-steel/50 mb-1.5">
+                    <div id="cal-bar" class="h-full bg-gradient-to-r from-electric to-cyan-400 transition-all duration-300 rounded-full" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between text-[11px] font-mono text-slate-400 mb-4">
+                    <span id="cal-remaining">Restantes: 2550 kcal</span>
+                    <span id="cal-percent">0%</span>
+                </div>
+
+                <!-- Grid 3 Macros -->
+                <div class="grid grid-cols-3 gap-2.5">
+                    <!-- Proteína -->
+                    <div class="bg-obsidian/80 border border-steel/60 rounded-xl p-2.5">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[11px] font-bold text-sky-400">PROT</span>
+                            <span id="prot-rem" class="text-[10px] font-mono text-slate-400">-185g</span>
+                        </div>
+                        <div class="font-mono text-sm font-bold text-white mb-1.5">
+                            <span id="prot-val">0</span><span class="text-slate-500 text-xs">/<span id="prot-target">185</span>g</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-slateCard rounded-full overflow-hidden">
+                            <div id="prot-bar" class="h-full bg-sky-400 transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Carbohidratos -->
+                    <div class="bg-obsidian/80 border border-steel/60 rounded-xl p-2.5">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[11px] font-bold text-emerald-400">CARBS</span>
+                            <span id="carb-rem" class="text-[10px] font-mono text-slate-400">-310g</span>
+                        </div>
+                        <div class="font-mono text-sm font-bold text-white mb-1.5">
+                            <span id="carb-val">0</span><span class="text-slate-500 text-xs">/<span id="carb-target">310</span>g</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-slateCard rounded-full overflow-hidden">
+                            <div id="carb-bar" class="h-full bg-emerald-400 transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Grasas -->
+                    <div class="bg-obsidian/80 border border-steel/60 rounded-xl p-2.5">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[11px] font-bold text-amber-400">GRASAS</span>
+                            <span id="fat-rem" class="text-[10px] font-mono text-slate-400">-65g</span>
+                        </div>
+                        <div class="font-mono text-sm font-bold text-white mb-1.5">
+                            <span id="fat-val">0</span><span class="text-slate-500 text-xs">/<span id="fat-target">65</span>g</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-slateCard rounded-full overflow-hidden">
+                            <div id="fat-bar" class="h-full bg-amber-400 transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón Principal Agregar Alimento -->
+            <div class="flex gap-2">
+                <button onclick="openAddFoodModal('Desayuno')" class="flex-1 py-3 px-4 rounded-xl bg-electric hover:bg-electricGlow text-obsidian font-bold text-sm shadow-lg shadow-electric/20 transition active:scale-[0.98] flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                    Registrar Alimento (Crudo)
+                </button>
+                <button onclick="confirmResetDay()" class="py-3 px-3.5 rounded-xl bg-slateCard border border-steel text-slate-300 hover:text-rose-400 hover:border-rose-500/50 text-xs font-semibold transition active:scale-95" title="Cerrar y Guardar Día">
+                    Cerrar Día
+                </button>
+            </div>
+
+            <!-- Las 3 Comidas Estructuradas -->
+            <div id="meals-container" class="space-y-4">
+                <!-- Se renderiza dinámicamente vía JS (Desayuno, Almuerzo, Once) -->
+            </div>
+
+        </section>
+
+        <!-- ========================================== -->
+        <!-- PESTAÑA 2: GYM & PLIO                      -->
+        <!-- ========================================== -->
+        <section id="tab-gym" class="tab-content hidden space-y-4">
+            
+            <!-- Selector de Días (Martes a Viernes) -->
+            <div class="grid grid-cols-4 gap-1.5 bg-slateCard p-1.5 rounded-2xl border border-steel/80">
+                <button onclick="selectGymDay('martes')" id="btn-day-martes" class="gym-day-btn py-2.5 rounded-xl text-xs font-bold transition">MAR</button>
+                <button onclick="selectGymDay('miercoles')" id="btn-day-miercoles" class="gym-day-btn py-2.5 rounded-xl text-xs font-bold transition">MIÉ</button>
+                <button onclick="selectGymDay('jueves')" id="btn-day-jueves" class="gym-day-btn py-2.5 rounded-xl text-xs font-bold transition">JUE</button>
+                <button onclick="selectGymDay('viernes')" id="btn-day-viernes" class="gym-day-btn py-2.5 rounded-xl text-xs font-bold transition">VIE</button>
+            </div>
+
+            <!-- Encabezado del Día Activo -->
+            <div class="bg-slateCard border border-steel/80 rounded-2xl p-4 flex items-center justify-between">
+                <div>
+                    <span id="gym-day-tag" class="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded bg-electric/15 text-electric border border-electric/30">DÍA 1</span>
+                    <h2 id="gym-day-title" class="text-base font-extrabold text-white mt-1.5">Tren Inferior Fuerza + Plio</h2>
+                    <p id="gym-day-subtitle" class="text-xs text-slate-400 mt-0.5">Enfoque: Fuerza máxima y reactividad</p>
+                </div>
+                <button onclick="openAddExerciseModal()" class="p-2.5 rounded-xl bg-obsidian border border-steel text-electric hover:border-electric active:scale-95" title="Agregar Ejercicio">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                </button>
+            </div>
+
+            <!-- Lista de Ejercicios del Día -->
+            <div id="gym-exercises-list" class="space-y-3.5 pb-16">
+                <!-- Renderizado dinámico -->
+            </div>
+
+        </section>
+
+        <!-- ========================================== -->
+        <!-- PESTAÑA 3: SALTO (100 CM)                  -->
+        <!-- ========================================== -->
+        <section id="tab-jump" class="tab-content hidden space-y-4">
+            
+            <!-- Meta Principal 100 CM -->
+            <div class="bg-gradient-to-br from-slateCard to-[#0d192e] border border-electric/40 rounded-2xl p-4 shadow-lg relative overflow-hidden">
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <span class="text-[11px] font-mono uppercase tracking-wider text-electric font-bold">OBJETIVO: CLUB 100 CM</span>
+                        <div class="flex items-baseline gap-2 mt-1">
+                            <span id="jump-best-overall" class="font-mono text-3xl font-extrabold text-white">0</span>
+                            <span class="font-mono text-sm text-slate-400">/ 100 cm</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[11px] text-slate-400 block">Faltan</span>
+                        <span id="jump-remaining-cm" class="font-mono text-base font-bold text-cyan-400">100 cm</span>
+                    </div>
+                </div>
+
+                <!-- Barra de Progreso hacia 100cm -->
+                <div class="w-full h-3.5 bg-obsidian/90 rounded-full overflow-hidden border border-steel p-0.5">
+                    <div id="jump-goal-bar" class="h-full bg-gradient-to-r from-sky-500 via-electric to-cyan-300 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+
+                <!-- PRs por Modalidad -->
+                <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-steel/50">
+                    <div class="bg-obsidian/60 rounded-xl p-2 text-center border border-steel/40">
+                        <span class="text-[10px] font-mono text-slate-400 block">PR SPIKE (CARRERA)</span>
+                        <span id="pr-spike" class="font-mono text-sm font-extrabold text-electric mt-0.5 block">-- cm</span>
+                    </div>
+                    <div class="bg-obsidian/60 rounded-xl p-2 text-center border border-steel/40">
+                        <span class="text-[10px] font-mono text-slate-400 block">PR CMJ</span>
+                        <span id="pr-cmj" class="font-mono text-sm font-extrabold text-emerald-400 mt-0.5 block">-- cm</span>
+                    </div>
+                    <div class="bg-obsidian/60 rounded-xl p-2 text-center border border-steel/40">
+                        <span class="text-[10px] font-mono text-slate-400 block">PR SQUAT JUMP</span>
+                        <span id="pr-sj" class="font-mono text-sm font-extrabold text-amber-400 mt-0.5 block">-- cm</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico Canvas de Progresión -->
+            <div class="bg-slateCard border border-steel/80 rounded-2xl p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Curva de Progresión</h3>
+                    <select id="chart-filter" onchange="renderJumpChart()" class="bg-obsidian border border-steel rounded-lg text-xs px-2.5 py-1 text-slate-200 font-mono focus:outline-none focus:border-electric">
+                        <option value="ALL">Todos los saltos</option>
+                        <option value="Spike">Spike Jump (Vóley)</option>
+                        <option value="CMJ">CMJ</option>
+                        <option value="SJ">Squat Jump (SJ)</option>
+                    </select>
+                </div>
+                <div class="w-full h-44 relative">
+                    <canvas id="jumpCanvas" class="w-full h-full block"></canvas>
+                </div>
+            </div>
+
+            <!-- Registrar Nueva Medición -->
+            <div class="bg-slateCard border border-steel/80 rounded-2xl p-4">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3">Registrar Nuevo Salto</h3>
+                <form onsubmit="addJumpRecord(event)" class="space-y-3">
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div>
+                            <label class="text-[11px] text-slate-400 block mb-1">Modalidad</label>
+                            <select id="jump-type" class="w-full bg-obsidian border border-steel rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-electric">
+                                <option value="Spike">Spike Jump (Carrera)</option>
+                                <option value="CMJ">CMJ (Contramov.)</option>
+                                <option value="SJ">Squat Jump (Estático)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[11px] text-slate-400 block mb-1">Altura (cm)</label>
+                            <input type="number" step="0.5" min="20" max="140" id="jump-cm" required placeholder="Ej: 82.5" class="w-full bg-obsidian border border-steel rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:outline-none focus:border-electric">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2.5 items-end">
+                        <div>
+                            <label class="text-[11px] text-slate-400 block mb-1">Fecha</label>
+                            <input type="date" id="jump-date" required class="w-full bg-obsidian border border-steel rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-electric">
+                        </div>
+                        <button type="submit" class="w-full py-2.5 rounded-xl bg-electric hover:bg-electricGlow text-obsidian font-bold text-sm transition active:scale-95">
+                            Guardar Salto
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Calculadora de Alcance Vóleibol -->
+            <div class="bg-slateCard border border-steel/80 rounded-2xl p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Calculadora Alcance Red (2.43m)</h3>
+                    <span class="text-[10px] font-mono text-electric bg-electric/10 px-2 py-0.5 rounded">VÓLEIBOL</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2.5 mb-3">
+                    <div>
+                        <label class="text-[11px] text-slate-400 block mb-1">Alcance Parado (cm)</label>
+                        <input type="number" id="standing-reach" value="224" oninput="calcVolleyReach()" class="w-full bg-obsidian border border-steel rounded-xl px-3 py-2 text-sm font-mono text-white focus:outline-none focus:border-electric">
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-slate-400 block mb-1">Salto Vertical (cm)</label>
+                        <input type="number" id="calc-vertical" placeholder="80" oninput="calcVolleyReach()" class="w-full bg-obsidian border border-steel rounded-xl px-3 py-2 text-sm font-mono text-white focus:outline-none focus:border-electric">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2.5 bg-obsidian/80 p-3 rounded-xl border border-steel/60">
+                    <div>
+                        <span class="text-[10px] text-slate-400 block">ALCANCE TOTAL</span>
+                        <span id="total-reach-res" class="font-mono text-lg font-extrabold text-white">304 cm</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-slate-400 block">SOBRE RED (243 CM)</span>
+                        <span id="over-net-res" class="font-mono text-lg font-extrabold text-emerald-400">+61 cm</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historial Reciente de Saltos -->
+            <div class="bg-slateCard border border-steel/80 rounded-2xl p-4">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3">Registros Guardados</h3>
+                <div id="jump-history-list" class="space-y-2 max-h-60 overflow-y-auto no-scrollbar">
+                    <!-- Renderizado dinámico -->
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- ========================================== -->
+    <!-- TEMPORIZADOR FLOTANTE (VISIBLE EN GYM)     -->
+    <!-- ========================================== -->
+    <div id="floating-timer" class="hidden fixed bottom-20 left-1/2 -translate-x-1/2 w-[92%] max-w-md z-30 bg-slateCard/95 backdrop-blur-md border border-electric/60 rounded-2xl p-2.5 shadow-2xl shadow-black/80 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5 pl-1">
+            <div class="w-8 h-8 rounded-xl bg-electric/15 border border-electric/40 flex items-center justify-center text-electric">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <div>
+                <span id="timer-display" class="font-mono text-lg font-extrabold text-white tracking-wider">00:00</span>
+                <span id="timer-status" class="text-[10px] text-slate-400 block -mt-1">Descanso</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-1">
+            <button onclick="startRestTimer(60)" class="px-2 py-1.5 rounded-lg bg-obsidian border border-steel text-[11px] font-mono font-bold text-slate-200 hover:border-electric active:scale-95">60s</button>
+            <button onclick="startRestTimer(90)" class="px-2 py-1.5 rounded-lg bg-obsidian border border-steel text-[11px] font-mono font-bold text-slate-200 hover:border-electric active:scale-95">90s</button>
+            <button onclick="startRestTimer(120)" class="px-2 py-1.5 rounded-lg bg-obsidian border border-steel text-[11px] font-mono font-bold text-slate-200 hover:border-electric active:scale-95">120s</button>
+            <button onclick="startRestTimer(180)" class="px-2 py-1.5 rounded-lg bg-obsidian border border-steel text-[11px] font-mono font-bold text-slate-200 hover:border-electric active:scale-95">180s</button>
+            <button onclick="stopRestTimer()" class="p-1.5 rounded-lg bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 ml-0.5" title="Detener">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- BARRA DE NAVEGACIÓN INFERIOR FIJA          -->
+    <!-- ========================================== -->
+    <nav class="fixed bottom-0 left-0 right-0 z-40 bg-obsidian/95 backdrop-blur-lg border-t border-steel/80 px-2 py-1.5 safe-area-bottom">
+        <div class="max-w-lg mx-auto grid grid-cols-3 gap-1">
+            <button onclick="switchTab('macros')" id="nav-macros" class="nav-btn flex flex-col items-center justify-center py-2 rounded-xl text-electric bg-electric/10 transition">
+                <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                <span class="text-[11px] font-bold tracking-wide">MACROS</span>
+            </button>
+
+            <button onclick="switchTab('gym')" id="nav-gym" class="nav-btn flex flex-col items-center justify-center py-2 rounded-xl text-slate-400 hover:text-slate-200 transition">
+                <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                <span class="text-[11px] font-bold tracking-wide">GYM & PLIO</span>
+            </button>
+
+            <button onclick="switchTab('jump')" id="nav-jump" class="nav-btn flex flex-col items-center justify-center py-2 rounded-xl text-slate-400 hover:text-slate-200 transition">
+                <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                <span class="text-[11px] font-bold tracking-wide">SALTO 100</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ========================================== -->
+    <!-- MODALES INTERACTIVOS                       -->
+    <!-- ========================================== -->
+
+    <!-- 1. MODAL AGREGAR ALIMENTO (CRUDO + PRESETS) -->
+    <div id="modal-add-food" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-slateCard border-t sm:border border-steel w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 max-h-[90vh] overflow-y-auto no-scrollbar">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-base font-extrabold text-white">Agregar Alimento (Peso Crudo)</h3>
+                <button onclick="closeModal('modal-add-food')" class="p-2 rounded-xl bg-obsidian text-slate-400 hover:text-white">✕</button>
+            </div>
+
+            <!-- Selector de Comida -->
+            <div class="grid grid-cols-3 gap-2 mb-4">
+                <button type="button" onclick="setFoodMeal('Desayuno')" class="meal-select-btn py-2 rounded-xl text-xs font-bold border transition" data-meal="Desayuno">Desayuno</button>
+                <button type="button" onclick="setFoodMeal('Almuerzo')" class="meal-select-btn py-2 rounded-xl text-xs font-bold border transition" data-meal="Almuerzo">Almuerzo</button>
+                <button type="button" onclick="setFoodMeal('Once')" class="meal-select-btn py-2 rounded-xl text-xs font-bold border transition" data-meal="Once">Once</button>
+            </div>
+
+            <!-- Presets Rápidos -->
+            <div class="mb-4">
+                <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2">Presets Rápidos (Valores por 100g crudo)</label>
+                <div id="presets-list" class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                    <!-- Chips renderizados dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Formulario de Cálculo -->
+            <form onsubmit="submitFoodEntry(event)" class="space-y-3">
+                <input type="hidden" id="food-meal-input" value="Desayuno">
+                
+                <div class="grid grid-cols-3 gap-2.5">
+                    <div class="col-span-2">
+                        <label class="text-[11px] text-slate-400 block mb-1">Alimento</label>
+                        <input type="text" id="food-name" required placeholder="Ej: Pechuga de pollo cruda" class="w-full bg-obsidian border border-steel rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-electric">
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-electric font-bold block mb-1">Gramos (Crudo)</label>
+                        <input type="number" step="1" min="1" id="food-grams" required value="100" oninput="updateFoodPreview()" class="w-full bg-obsidian border border-electric/60 rounded-xl px-3 py-2.5 text-sm font-mono font-bold text-white focus:outline-none focus:border-electric">
+                    </div>
+                </div>
+
+                <!-- Valores por 100g -->
+                <div class="bg-obsidian/70 p-3 rounded-2xl border border-steel/60">
+                    <span class="text-[10px] font-mono uppercase text-slate-400 block mb-2">Información Nutricional por cada 100g:</span>
+                    <div class="grid grid-cols-4 gap-2">
+                        <div>
+                            <label class="text-[10px] text-slate-400 block mb-1">Kcal</label>
+                            <input type="number" step="0.1" id="food-kcal100" required oninput="updateFoodPreview()" class="w-full bg-slateCard border border-steel rounded-lg px-2 py-1.5 text-xs font-mono text-white">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-sky-400 block mb-1">Prot (g)</label>
+                            <input type="number" step="0.1" id="food-prot100" required oninput="updateFoodPreview()" class="w-full bg-slateCard border border-steel rounded-lg px-2 py-1.5 text-xs font-mono text-white">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-emerald-400 block mb-1">Carbs (g)</label>
+                            <input type="number" step="0.1" id="food-carb100" required oninput="updateFoodPreview()" class="w-full bg-slateCard border border-steel rounded-lg px-2 py-1.5 text-xs font-mono text-white">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-amber-400 block mb-1">Grasas (g)</label>
+                            <input type="number" step="0.1" id="food-fat100" required oninput="updateFoodPreview()" class="w-full bg-slateCard border border-steel rounded-lg px-2 py-1.5 text-xs font-mono text-white">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vista Previa Calculada -->
+                <div class="flex items-center justify-between bg-electric/10 border border-electric/30 rounded-xl px-3.5 py-2.5">
+                    <span class="text-xs font-semibold text-slate-200">Total a sumar:</span>
+                    <div class="font-mono text-xs font-bold text-white flex gap-2.5">
+                        <span id="prev-kcal" class="text-electric">0 kcal</span>
+                        <span id="prev-prot" class="text-sky-400">0P</span>
+                        <span id="prev-carb" class="text-emerald-400">0C</span>
+                        <span id="prev-fat" class="text-amber-400">0G</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 pt-1">
+                    <button type="button" onclick="saveCurrentAsPreset()" class="py-3 px-3.5 rounded-xl bg-obsidian border border-steel text-xs font-semibold text-slate-300 hover:border-electric hover:text-electric transition">
+                        + Guardar Preset
+                    </button>
+                    <button type="submit" class="flex-1 py-3 rounded-xl bg-electric hover:bg-electricGlow text-obsidian font-extrabold text-sm transition active:scale-95">
+                        Añadir a Comida
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. MODAL EDITAR OBJETIVOS MACROS -->
+    <div id="modal-macro-goals" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slateCard border border-steel w-full max-w-sm rounded-3xl p-5">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-base font-extrabold text-white">Objetivos Diarios</h3>
+                <button onclick="closeModal('modal-macro-goals')" class="p-1.5 rounded-lg bg-obsidian text-slate-400">✕</button>
+            </div>
+            <form onsubmit="saveMacroGoals(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs text-slate-400 block mb-1">Calorías Objetivo (kcal)</label>
+                    <input type="number" id="goal-kcal" required class="w-full bg-obsidian border border-steel rounded-xl px-3 py-2.5 font-mono text-white">
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <div>
+                        <label class="text-xs text-sky-400 block mb-1">Proteína (g)</label>
+                        <input type="number" id="goal-prot" required class="w-full bg-obsidian border border-steel rounded-xl px-3 py-2 font-mono text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs text-emerald-400 block mb-1">Carbs (g)</label>
+                        <input type="number" id="goal-carb" required class="w-full bg-obsidian border border-steel rounded-xl px-3 py-2 font-mono text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs text-amber-400 block mb-1">Grasas (g)</label>
+                        <input type="number" id="goal-fat" required class="w-full bg-obsidian border border-steel rounded-xl px-3 py-2 font-mono text-white">
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3 mt-2 rounded-xl bg-electric text-obsidian font-extrabold text-sm">Guardar Objetivos</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3. MODAL HISTORIAL DE MACROS -->
+    <div id="modal-macro-history" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slateCard border border-steel w-full max-w-md rounded-3xl p-5 max-h-[80vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-base font-extrabold text-white">Historial de Días Cerrados</h3>
+                <button onclick="closeModal('modal-macro-history')" class="p-1.5 rounded-lg bg-obsidian text-slate-400">✕</button>
+            </div>
+            <div id="macro-history-list" class="space-y-2.5 overflow-y-auto no-scrollbar flex-1">
+                <!-- Renderizado dinámico -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. MODAL AGREGAR EJERCICIO GYM -->
+    <div id="modal-add-exercise" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slateCard border border-steel w-full max-w-sm rounded-3xl p-5">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-base font-extrabold text-white">Nuevo Ejercicio</h3>
+                <button onclick="closeModal('modal-add-exercise')" class="p-1.5 rounded-lg bg-obsidian text-slate-400">✕</button>
+            </div>
+            <form onsubmit="submitNewExercise(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs text-slate-400 block mb-1">Nombre del Ejercicio</label>
+                    <input type="text" id="new-ex-name" required placeholder="Ej: Sentadilla Búlgara" class="w-full bg-obsidian border border-steel rounded-xl px-3 py-2.5 text-sm text-white">
+                </div>
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Tipo</label>
+                        <select id="new-ex-type" class="w-full bg-obsidian border border-steel rounded-xl px-3 py-2.5 text-sm text-white">
+                            <option value="Fuerza">Fuerza / Hipertrofia</option>
+                            <option value="Pliometría">Pliometría / Salto</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Series</label>
+                        <input type="number" id="new-ex-sets" value="4" min="1" max="10" required class="w-full bg-obsidian border border-steel rounded-xl px-3 py-2.5 text-sm font-mono text-white">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400 block mb-1">Rango Meta (Ej: 4x6 o 3x5 explosivo)</label>
+                    <input type="text" id="new-ex-target" placeholder="4 x 6-8 reps" value="4 x 6-8 reps" class="w-full bg-obsidian border border-steel rounded-xl px-3 py-2.5 text-sm text-white">
+                </div>
+                <button type="submit" class="w-full py-3 mt-2 rounded-xl bg-electric text-obsidian font-extrabold text-sm">Agregar a la Rutina</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 5. MODAL RESPALDO JSON (EXPORTAR / IMPORTAR) -->
+    <div id="modal-backup" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slateCard border border-steel w-full max-w-md rounded-3xl p-5">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-base font-extrabold text-white">Respaldo de Datos (JSON)</h3>
+                <button onclick="closeModal('modal-backup')" class="p-1.5 rounded-lg bg-obsidian text-slate-400">✕</button>
+            </div>
+            <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+                Tus datos se guardan automáticamente en este navegador. Exporta un archivo de respaldo periódicamente para no perder tu progreso de gym, macros o saltos.
+            </p>
+            
+            <div class="space-y-3">
+                <button onclick="exportDataJSON()" class="w-full py-3 px-4 rounded-xl bg-electric hover:bg-electricGlow text-obsidian font-extrabold text-sm flex items-center justify-center gap-2 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Descargar Respaldo (.json)
+                </button>
+
+                <div class="relative">
+                    <input type="file" id="import-file-input" accept=".json" onchange="importDataJSON(event)" class="hidden">
+                    <button onclick="document.getElementById('import-file-input').click()" class="w-full py-3 px-4 rounded-xl bg-obsidian border border-steel hover:border-electric text-slate-200 font-bold text-sm flex items-center justify-center gap-2 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        Restaurar desde Archivo (.json)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT PRINCIPAL                       -->
+    <!-- ========================================== -->
+    <script>
+        // ==========================================
+        // 1. ESTADO GLOBAL Y DATOS PRE-CARGADOS
+        // ==========================================
+        const STORAGE_KEY = 'reinaldo_tracker_v1';
+
+        const DEFAULT_PRESETS = [
+            { name: 'Pechuga de pollo cruda', kcal: 120, prot: 22.5, carb: 0, fat: 2.6 },
+            { name: 'Churrasco vacuno crudo', kcal: 135, prot: 21.5, carb: 0, fat: 5.0 },
+            { name: 'Arroz blanco crudo', kcal: 360, prot: 7.0, carb: 79.0, fat: 0.7 },
+            { name: 'Papas crudas (Air Fryer)', kcal: 77, prot: 2.0, carb: 17.5, fat: 0.1 },
+            { name: 'Avena tradicional cruda', kcal: 375, prot: 13.0, carb: 66.0, fat: 6.5 },
+            { name: 'Semillas de chía', kcal: 486, prot: 16.5, carb: 42.0, fat: 30.7 },
+            { name: 'Leche semidescremada', kcal: 47, prot: 3.3, carb: 4.8, fat: 1.5 },
+            { name: 'Huevos enteros (crudo)', kcal: 143, prot: 12.6, carb: 0.7, fat: 9.5 },
+            { name: 'Pan marraqueta', kcal: 275, prot: 8.5, carb: 56.0, fat: 1.5 },
+            { name: 'Cacao amargo sin azúcar', kcal: 228, prot: 19.6, carb: 57.9, fat: 13.7 }
+        ];
+
+        const DEFAULT_GYM_ROUTINE = {
+            martes: {
+                tag: 'DÍA 1 • MARTES',
+                title: 'Tren Inferior Fuerza + Pliometría',
+                subtitle: 'Fuerza máxima base + transferencia vertical',
+                exercises: [
+                    { id: 'm1', name: 'Squat Jumps Estáticos (Pausa 2s)', type: 'Pliometría', target: '4 x 5 explosivos', lastBest1RM: 0, sets: [{ kg: 0, reps: 5, done: false }, { kg: 0, reps: 5, done: false }, { kg: 0, reps: 5, done: false }, { kg: 0, reps: 5, done: false }] },
+                    { id: 'm2', name: 'Saltos al Cajón (Box Jumps)', type: 'Pliometría', target: '4 x 4 máxima altura', lastBest1RM: 0, sets: [{ kg: 0, reps: 4, done: false }, { kg: 0, reps: 4, done: false }, { kg: 0, reps: 4, done: false }, { kg: 0, reps: 4, done: false }] },
+                    { id: 'm3', name: 'Sentadilla Trasera (Back Squat)', type: 'Fuerza', target: '4 x 5 reps pesadas', lastBest1RM: 130, sets: [{ kg: 100, reps: 5, done: false }, { kg: 105, reps: 5, done: false }, { kg: 110, reps: 5, done: false }, { kg: 110, reps: 5, done: false }] },
+                    { id: 'm4', name: 'Peso Muerto Rumano (RDL)', type: 'Fuerza', target: '3 x 6-8 reps', lastBest1RM: 125, sets: [{ kg: 95, reps: 6, done: false }, { kg: 100, reps: 6, done: false }, { kg: 100, reps: 6, done: false }] }
+                ]
+            },
+            miercoles: {
+                tag: 'DÍA 2 • MIÉRCOLES',
+                title: 'Tren Superior Fuerza',
+                subtitle: 'Empuje y tracción pesada para remate',
+                exercises: [
+                    { id: 'x1', name: 'Press Banca Plano', type: 'Fuerza', target: '4 x 5-6 reps', lastBest1RM: 95, sets: [{ kg: 75, reps: 6, done: false }, { kg: 80, reps: 5, done: false }, { kg: 80, reps: 5, done: false }, { kg: 80, reps: 5, done: false }] },
+                    { id: 'x2', name: 'Dominadas Lastradas', type: 'Fuerza', target: '4 x 5-6 reps', lastBest1RM: 25, sets: [{ kg: 10, reps: 6, done: false }, { kg: 15, reps: 5, done: false }, { kg: 15, reps: 5, done: false }, { kg: 15, reps: 5, done: false }] },
+                    { id: 'x3', name: 'Remo con Barra', type: 'Fuerza', target: '3 x 8 reps', lastBest1RM: 85, sets: [{ kg: 65, reps: 8, done: false }, { kg: 70, reps: 8, done: false }, { kg: 70, reps: 8, done: false }] },
+                    { id: 'x4', name: 'Press Militar de Pie', type: 'Fuerza', target: '3 x 6-8 reps', lastBest1RM: 60, sets: [{ kg: 45, reps: 8, done: false }, { kg: 50, reps: 6, done: false }, { kg: 50, reps: 6, done: false }] }
+                ]
+            },
+            jueves: {
+                tag: 'DÍA 3 • JUEVES',
+                title: 'Tren Inferior Explosividad & Potencia',
+                subtitle: 'Velocidad de contacto y ciclo estiramiento-acortamiento',
+                exercises: [
+                    { id: 'j1', name: 'Depth Jumps (Caída desde cajón)', type: 'Pliometría', target: '4 x 4 contacto mínimo', lastBest1RM: 0, sets: [{ kg: 0, reps: 4, done: false }, { kg: 0, reps: 4, done: false }, { kg: 0, reps: 4, done: false }, { kg: 0, reps: 4, done: false }] },
+                    { id: 'j2', name: 'Drop Jumps Reactivos', type: 'Pliometría', target: '3 x 5 explosivos', lastBest1RM: 0, sets: [{ kg: 0, reps: 5, done: false }, { kg: 0, reps: 5, done: false }, { kg: 0, reps: 5, done: false }] },
+                    { id: 'j3', name: 'Saltos Unilaterales (Aproximación)', type: 'Pliometría', target: '3 x 4 por pierna', lastBest1RM: 0, sets: [{ kg: 0, reps: 4, done: false }, { kg: 0, reps: 4, done: false }, { kg: 0, reps: 4, done: false }] },
+                    { id: 'j4', name: 'Sentadilla Frontal Explosiva', type: 'Fuerza', target: '4 x 4 velocidad máxima', lastBest1RM: 105, sets: [{ kg: 75, reps: 4, done: false }, { kg: 80, reps: 4, done: false }, { kg: 80, reps: 4, done: false }, { kg: 80, reps: 4, done: false }] }
+                ]
+            },
+            viernes: {
+                tag: 'DÍA 4 • VIERNES',
+                title: 'Tren Superior Hipertrofia & Calistenia',
+                subtitle: 'Estabilidad escapular, hombro sano y core',
+                exercises: [
+                    { id: 'v1', name: 'Fondos en Paralelas (Dips)', type: 'Fuerza', target: '4 x 8-12 reps', lastBest1RM: 30, sets: [{ kg: 10, reps: 10, done: false }, { kg: 15, reps: 8, done: false }, { kg: 15, reps: 8, done: false }, { kg: 15, reps: 8, done: false }] },
+                    { id: 'v2', name: 'Dominadas en Barra Casa (Estrictas)', type: 'Fuerza', target: '4 x 8-10 reps', lastBest1RM: 0, sets: [{ kg: 0, reps: 10, done: false }, { kg: 0, reps: 9, done: false }, { kg: 0, reps: 8, done: false }, { kg: 0, reps: 8, done: false }] },
+                    { id: 'v3', name: 'Elevaciones Laterales Mancuerna', type: 'Fuerza', target: '4 x 12-15 reps', lastBest1RM: 18, sets: [{ kg: 12, reps: 15, done: false }, { kg: 12, reps: 14, done: false }, { kg: 12, reps: 12, done: false }, { kg: 12, reps: 12, done: false }] },
+                    { id: 'v4', name: 'Core Anti-Rotación (Pallof / Rueda)', type: 'Fuerza', target: '3 x 12 reps', lastBest1RM: 0, sets: [{ kg: 15, reps: 12, done: false }, { kg: 15, reps: 12, done: false }, { kg: 15, reps: 12, done: false }] }
+                ]
+            }
+        };
+
+        const DEFAULT_STATE = {
+            activeTab: 'macros',
+            activeGymDay: 'martes',
+            macroGoals: { kcal: 2550, prot: 185, carb: 310, fat: 65 },
+            todayFoods: [], // { id, meal, name, grams, kcal, prot, carb, fat }
+            macroHistory: [], // { date, kcal, prot, carb, fat }
+            presets: DEFAULT_PRESETS,
+            gymRoutine: DEFAULT_GYM_ROUTINE,
+            jumps: [
+                { id: 1, date: '2026-10-01', type: 'SJ', cm: 68.0 },
+                { id: 2, date: '2026-10-01', type: 'CMJ', cm: 73.5 },
+                { id: 3, date: '2026-10-01', type: 'Spike', cm: 81.0 },
+                { id: 4, date: '2026-11-15', type: 'CMJ', cm: 76.0 },
+                { id: 5, date: '2026-11-15', type: 'Spike', cm: 84.5 }
+            ],
+            standingReach: 224
+        };
+
+        let appState = loadState();
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return JSON.parse(JSON.stringify(DEFAULT_STATE));
+                const parsed = JSON.parse(raw);
+                return { ...JSON.parse(JSON.stringify(DEFAULT_STATE)), ...parsed };
+            } catch (e) {
+                console.error('Error cargando localStorage:', e);
+                return JSON.parse(JSON.stringify(DEFAULT_STATE));
+            }
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+            } catch (e) {
+                showToast('Error guardando datos locales', 'error');
+            }
+        }
+
+        // ==========================================
+        // 2. SISTEMA DE NOTIFICACIONES (TOAST)
+        // ==========================================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const colors = {
+                info: 'bg-slateCard border-electric text-white',
+                success: 'bg-emerald-950/95 border-emerald-500 text-emerald-200',
+                error: 'bg-rose-950/95 border-rose-500 text-rose-200'
+            };
+            toast.className = `px-4 py-3 rounded-2xl border shadow-xl text-xs font-semibold flex items-center justify-between transition-all duration-300 ${colors[type] || colors.info}`;
+            toast.innerHTML = `<span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-8px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 2600);
+        }
+
+        // ==========================================
+        // 3. NAVEGACIÓN ENTRE PESTAÑAS
+        // ==========================================
+        function switchTab(tabName) {
+            appState.activeTab = tabName;
+            saveState();
+
+            ['macros', 'gym', 'jump'].forEach(t => {
+                const section = document.getElementById(`tab-${t}`);
+                const btn = document.getElementById(`nav-${t}`);
+                if (t === tabName) {
+                    section.classList.remove('hidden');
+                    btn.classList.add('text-electric', 'bg-electric/10');
+                    btn.classList.remove('text-slate-400');
+                } else {
+                    section.classList.add('hidden');
+                    btn.classList.remove('text-electric', 'bg-electric/10');
+                    btn.classList.add('text-slate-400');
+                }
+            });
+
+            // Mostrar temporizador flotante solo en pestaña GYM
+            const timerEl = document.getElementById('floating-timer');
+            if (tabName === 'gym') {
+                timerEl.classList.remove('hidden');
+            } else {
+                timerEl.classList.add('hidden');
+            }
+
+            if (tabName === 'jump') {
+                setTimeout(renderJumpChart, 50);
+            }
+        }
+
+        // ==========================================
+        // 4. LÓGICA DE MACROS Y COMIDAS
+        // ==========================================
+        function renderMacros() {
+            const goals = appState.macroGoals;
+            let totals = { kcal: 0, prot: 0, carb: 0, fat: 0 };
+
+            appState.todayFoods.forEach(item => {
+                totals.kcal += item.kcal;
+                totals.prot += item.prot;
+                totals.carb += item.carb;
+                totals.fat += item.fat;
+            });
+
+            // Actualizar cabecera
+            document.getElementById('cal-consumed').textContent = Math.round(totals.kcal);
+            document.getElementById('cal-target-display').textContent = goals.kcal;
+            
+            const calPct = Math.min(100, Math.round((totals.kcal / goals.kcal) * 100));
+            document.getElementById('cal-bar').style.width = `${calPct}%`;
+            document.getElementById('cal-percent').textContent = `${calPct}%`;
+            
+            const remKcal = Math.round(goals.kcal - totals.kcal);
+            const remEl = document.getElementById('cal-remaining');
+            remEl.textContent = remKcal >= 0 ? `Restantes: ${remKcal} kcal` : `Exceso: +${Math.abs(remKcal)} kcal`;
+            remEl.className = remKcal >= 0 ? 'text-slate-400' : 'text-rose-400 font-bold';
+
+            // Actualizar sub-barras (Prot, Carbs, Grasas)
+            updateMacroCard('prot', totals.prot, goals.prot);
+            updateMacroCard('carb', totals.carb, goals.carb);
+            updateMacroCard('fat', totals.fat, goals.fat);
+
+            // Renderizar 3 comidas (Desayuno, Almuerzo, Once)
+            const meals = ['Desayuno', 'Almuerzo', 'Once'];
+            const container = document.getElementById('meals-container');
+            container.innerHTML = '';
+
+            meals.forEach(meal => {
+                const mealItems = appState.todayFoods.filter(f => f.meal === meal);
+                const mealKcal = Math.round(mealItems.reduce((acc, i) => acc + i.kcal, 0));
+                const mealProt = Math.round(mealItems.reduce((acc, i) => acc + i.prot, 0));
+
+                const card = document.createElement('div');
+                card.className = 'bg-slateCard border border-steel/80 rounded-2xl p-3.5';
+                
+                let itemsHTML = '';
+                if (mealItems.length === 0) {
+                    itemsHTML = `<p class="text-xs text-slate-500 py-2 italic">Sin alimentos registrados en ${meal.toLowerCase()}.</p>`;
+                } else {
+                    itemsHTML = `<div class="divide-y divide-steel/40 mt-2">` + mealItems.map(item => `
+                        <div class="py-2.5 flex items-center justify-between gap-2">
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-xs font-bold text-slate-100 truncate">${item.name}</span>
+                                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-obsidian text-electric border border-steel/60 shrink-0">${item.grams}g</span>
+                                </div>
+                                <div class="text-[11px] font-mono text-slate-400 mt-0.5 flex gap-2">
+                                    <span>${Math.round(item.kcal)} kcal</span>
+                                    <span class="text-sky-400">${item.prot.toFixed(1)}P</span>
+                                    <span class="text-emerald-400">${item.carb.toFixed(1)}C</span>
+                                    <span class="text-amber-400">${item.fat.toFixed(1)}G</span>
+                                </div>
+                            </div>
+                            <button onclick="deleteFoodEntry('${item.id}')" class="p-2 text-slate-500 hover:text-rose-400 active:scale-90 transition" aria-label="Eliminar">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
+                    `).join('') + `</div>`;
+                }
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-sm font-extrabold text-white">${meal}</h3>
+                            <span class="text-[11px] font-mono text-slate-400">(${mealKcal} kcal • ${mealProt}g P)</span>
+                        </div>
+                        <button onclick="openAddFoodModal('${meal}')" class="px-2.5 py-1 rounded-lg bg-obsidian border border-steel text-xs font-bold text-electric hover:border-electric active:scale-95 transition">
+                            + Añadir
+                        </button>
+                    </div>
+                    ${itemsHTML}
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function updateMacroCard(key, current, target) {
+            document.getElementById(`${key}-val`).textContent = Math.round(current);
+            document.getElementById(`${key}-target`).textContent = target;
+            const rem = Math.round(target - current);
+            document.getElementById(`${key}-rem`).textContent = rem >= 0 ? `-${rem}g` : `+${Math.abs(rem)}g`;
+            const pct = Math.min(100, (current / target) * 100);
+            document.getElementById(`${key}-bar`).style.width = `${pct}%`;
+        }
+
+        function openAddFoodModal(meal) {
+            setFoodMeal(meal);
+            renderPresetsChips();
+            document.getElementById('food-name').value = '';
+            document.getElementById('food-grams').value = '100';
+            document.getElementById('food-kcal100').value = '';
+            document.getElementById('food-prot100').value = '';
+            document.getElementById('food-carb100').value = '';
+            document.getElementById('food-fat100').value = '';
+            updateFoodPreview();
+            document.getElementById('modal-add-food').classList.remove('hidden');
+        }
+
+        function setFoodMeal(meal) {
+            document.getElementById('food-meal-input').value = meal;
+            document.querySelectorAll('.meal-select-btn').forEach(btn => {
+                if (btn.dataset.meal === meal) {
+                    btn.className = 'meal-select-btn py-2 rounded-xl text-xs font-bold border bg-electric text-obsidian border-electric transition';
+                } else {
+                    btn.className = 'meal-select-btn py-2 rounded-xl text-xs font-bold border bg-obsidian text-slate-300 border-steel transition';
+                }
+            });
+        }
+
+        function renderPresetsChips() {
+            const container = document.getElementById('presets-list');
+            container.innerHTML = appState.presets.map((p, idx) => `
+                <button type="button" onclick="applyPreset(${idx})" class="shrink-0 px-3 py-1.5 rounded-xl bg-obsidian border border-steel hover:border-electric text-xs text-slate-200 font-medium transition active:scale-95">
+                    ${p.name}
+                </button>
+            `).join('');
+        }
+
+        function applyPreset(index) {
+            const p = appState.presets[index];
+            if (!p) return;
+            document.getElementById('food-name').value = p.name;
+            document.getElementById('food-kcal100').value = p.kcal;
+            document.getElementById('food-prot100').value = p.prot;
+            document.getElementById('food-carb100').value = p.carb;
+            document.getElementById('food-fat100').value = p.fat;
+            updateFoodPreview();
+        }
+
+        function updateFoodPreview() {
+            const grams = parseFloat(document.getElementById('food-grams').value) || 0;
+            const factor = grams / 100;
+            const kcal = (parseFloat(document.getElementById('food-kcal100').value) || 0) * factor;
+            const prot = (parseFloat(document.getElementById('food-prot100').value) || 0) * factor;
+            const carb = (parseFloat(document.getElementById('food-carb100').value) || 0) * factor;
+            const fat = (parseFloat(document.getElementById('food-fat100').value) || 0) * factor;
+
+            document.getElementById('prev-kcal').textContent = `${Math.round(kcal)} kcal`;
+            document.getElementById('prev-prot').textContent = `${prot.toFixed(1)}P`;
+            document.getElementById('prev-carb').textContent = `${carb.toFixed(1)}C`;
+            document.getElementById('prev-fat').textContent = `${fat.toFixed(1)}G`;
+        }
+
+        function submitFoodEntry(e) {
+            e.preventDefault();
+            const meal = document.getElementById('food-meal-input').value;
+            const name = document.getElementById('food-name').value.trim();
+            const grams = parseFloat(document.getElementById('food-grams').value) || 0;
+            const factor = grams / 100;
+
+            const entry = {
+                id: Date.now().toString(),
+                meal,
+                name,
+                grams,
+                kcal: (parseFloat(document.getElementById('food-kcal100').value) || 0) * factor,
+                prot: (parseFloat(document.getElementById('food-prot100').value) || 0) * factor,
+                carb: (parseFloat(document.getElementById('food-carb100').value) || 0) * factor,
+                fat: (parseFloat(document.getElementById('food-fat100').value) || 0) * factor
+            };
+
+            appState.todayFoods.push(entry);
+            saveState();
+            renderMacros();
+            closeModal('modal-add-food');
+            showToast(`+${Math.round(entry.kcal)} kcal agregadas a ${meal}`, 'success');
+        }
+
+        function saveCurrentAsPreset() {
+            const name = document.getElementById('food-name').value.trim();
+            const kcal = parseFloat(document.getElementById('food-kcal100').value);
+            const prot = parseFloat(document.getElementById('food-prot100').value);
+            const carb = parseFloat(document.getElementById('food-carb100').value);
+            const fat = parseFloat(document.getElementById('food-fat100').value);
+
+            if (!name || isNaN(kcal)) {
+                showToast('Completa el nombre y kcal por 100g primero', 'error');
+                return;
+            }
+            appState.presets.unshift({ name, kcal: kcal || 0, prot: prot || 0, carb: carb || 0, fat: fat || 0 });
+            saveState();
+            renderPresetsChips();
+            showToast('Preset guardado en tu lista rápida', 'success');
+        }
+
+        function deleteFoodEntry(id) {
+            appState.todayFoods = appState.todayFoods.filter(item => item.id !== id);
+            saveState();
+            renderMacros();
+        }
+
+        function openMacroGoalsModal() {
+            document.getElementById('goal-kcal').value = appState.macroGoals.kcal;
+            document.getElementById('goal-prot').value = appState.macroGoals.prot;
+            document.getElementById('goal-carb').value = appState.macroGoals.carb;
+            document.getElementById('goal-fat').value = appState.macroGoals.fat;
+            document.getElementById('modal-macro-goals').classList.remove('hidden');
+        }
+
+        function saveMacroGoals(e) {
+            e.preventDefault();
+            appState.macroGoals = {
+                kcal: parseInt(document.getElementById('goal-kcal').value) || 2550,
+                prot: parseInt(document.getElementById('goal-prot').value) || 185,
+                carb: parseInt(document.getElementById('goal-carb').value) || 310,
+                fat: parseInt(document.getElementById('goal-fat').value) || 65
+            };
+            saveState();
+            renderMacros();
+            closeModal('modal-macro-goals');
+            showToast('Objetivos diarios actualizados', 'success');
+        }
+
+        function confirmResetDay() {
+            if (appState.todayFoods.length === 0) {
+                showToast('No hay alimentos registrados hoy para cerrar', 'info');
+                return;
+            }
+            // Guardar resumen en historial y limpiar día
+            const totals = appState.todayFoods.reduce((acc, item) => ({
+                kcal: acc.kcal + item.kcal,
+                prot: acc.prot + item.prot,
+                carb: acc.carb + item.carb,
+                fat: acc.fat + item.fat
+            }), { kcal: 0, prot: 0, carb: 0, fat: 0 });
+
+            const todayStr = new Date().toLocaleDateString('es-CL', { day: '2-digit', month: 'short', year: 'numeric' });
+            appState.macroHistory.unshift({
+                date: todayStr,
+                kcal: Math.round(totals.kcal),
+                prot: Math.round(totals.prot),
+                carb: Math.round(totals.carb),
+                fat: Math.round(totals.fat)
+            });
+
+            appState.todayFoods = [];
+            saveState();
+            renderMacros();
+            showToast('Día guardado en historial y reiniciado', 'success');
+        }
+
+        function openMacroHistoryModal() {
+            const list = document.getElementById('macro-history-list');
+            if (appState.macroHistory.length === 0) {
+                list.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Aún no has cerrado ningún día. Usa "Cerrar Día" al finalizar tu Once.</p>`;
+            } else {
+                list.innerHTML = appState.macroHistory.map(h => `
+                    <div class="bg-obsidian border border-steel/60 rounded-xl p-3 flex justify-between items-center">
+                        <div>
+                            <span class="text-xs font-bold text-white block">${h.date}</span>
+                            <span class="text-[11px] font-mono text-slate-400">${h.prot}P • ${h.carb}C • ${h.fat}G</span>
+                        </div>
+                        <span class="font-mono text-sm font-extrabold text-electric">${h.kcal} kcal</span>
+                    </div>
+                `).join('');
+            }
+            document.getElementById('modal-macro-history').classList.remove('hidden');
+        }
+
+        // ==========================================
+        // 5. LÓGICA DE GYM & PLIOMETRÍA
+        // ==========================================
+        function selectGymDay(dayKey) {
+            appState.activeGymDay = dayKey;
+            saveState();
+            renderGymDay();
+        }
+
+        function calculateEpley1RM(kg, reps) {
+            if (!kg || kg <= 0 || !reps || reps <= 0) return 0;
+            if (reps === 1) return kg;
+            return Math.round(kg * (1 + reps / 30) * 10) / 10;
+        }
+
+        function renderGymDay() {
+            const dayKey = appState.activeGymDay;
+            const dayData = appState.gymRoutine[dayKey];
+
+            // Actualizar botones días
+            ['martes', 'miercoles', 'jueves', 'viernes'].forEach(d => {
+                const btn = document.getElementById(`btn-day-${d}`);
+                if (d === dayKey) {
+                    btn.className = 'gym-day-btn py-2.5 rounded-xl text-xs font-extrabold bg-electric text-obsidian shadow transition';
+                } else {
+                    btn.className = 'gym-day-btn py-2.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition';
+                }
+            });
+
+            document.getElementById('gym-day-tag').textContent = dayData.tag;
+            document.getElementById('gym-day-title').textContent = dayData.title;
+            document.getElementById('gym-day-subtitle').textContent = dayData.subtitle;
+
+            const listContainer = document.getElementById('gym-exercises-list');
+            listContainer.innerHTML = '';
+
+            dayData.exercises.forEach((ex, exIdx) => {
+                // Calcular mejor 1RM de la sesión actual
+                let currentMax1RM = 0;
+                ex.sets.forEach(s => {
+                    const est = calculateEpley1RM(parseFloat(s.kg), parseInt(s.reps));
+                    if (est > currentMax1RM) currentMax1RM = est;
+                });
+
+                const isPlio = ex.type === 'Pliometría';
+                const badgeClass = isPlio 
+                    ? 'bg-amber-500/15 text-amber-400 border-amber-500/30' 
+                    : 'bg-sky-500/15 text-sky-400 border-sky-500/30';
+
+                // Indicador de progreso 1RM
+                let progressHTML = '';
+                if (!isPlio && currentMax1RM > 0) {
+                    const diff = Math.round((currentMax1RM - (ex.lastBest1RM || 0)) * 10) / 10;
+                    const diffBadge = diff > 0 
+                        ? `<span class="text-emerald-400 font-bold">+${diff} kg</span>` 
+                        : (diff < 0 ? `<span class="text-slate-400">${diff} kg</span>` : `<span class="text-slate-400">Igual</span>`);
+                    
+                    progressHTML = `
+                        <div class="mt-2 pt-2 border-t border-steel/40 flex items-center justify-between text-[11px] font-mono">
+                            <span class="text-slate-400">1RM Est. (Epley): <strong class="text-white">${currentMax1RM} kg</strong></span>
+                            <span>vs Anterior: ${diffBadge}</span>
+                        </div>
+                    `;
+                }
+
+                const card = document.createElement('div');
+                card.className = 'bg-slateCard border border-steel/80 rounded-2xl p-4';
+
+                const setsRows = ex.sets.map((set, setIdx) => `
+                    <div class="grid grid-cols-12 gap-2 items-center py-1.5">
+                        <span class="col-span-2 font-mono text-xs font-bold text-slate-400">S${setIdx + 1}</span>
+                        <div class="col-span-4 relative">
+                            <input type="number" step="0.5" value="${set.kg}" onchange="updateSetData('${dayKey}', ${exIdx}, ${setIdx}, 'kg', this.value)" class="w-full bg-obsidian border border-steel rounded-lg px-2 py-1.5 text-center font-mono text-xs font-bold text-white focus:border-electric focus:outline-none">
+                            <span class="text-[9px] text-slate-500 absolute right-1.5 top-2">kg</span>
+                        </div>
+                        <div class="col-span-4 relative">
+                            <input type="number" value="${set.reps}" onchange="updateSetData('${dayKey}', ${exIdx}, ${setIdx}, 'reps', this.value)" class="w-full bg-obsidian border border-steel rounded-lg px-2 py-1.5 text-center font-mono text-xs font-bold text-white focus:border-electric focus:outline-none">
+                            <span class="text-[9px] text-slate-500 absolute right-1.5 top-2">rep</span>
+                        </div>
+                        <div class="col-span-2 flex justify-end">
+                            <button onclick="toggleSetDone('${dayKey}', ${exIdx}, ${setIdx})" class="w-8 h-8 rounded-xl border flex items-center justify-center transition active:scale-90 ${set.done ? 'bg-emerald-500 border-emerald-400 text-obsidian' : 'bg-obsidian border-steel text-slate-500'}">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-2 mb-2.5">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded border ${badgeClass}">${ex.type}</span>
+                                <span class="text-[11px] font-mono text-slate-400">${ex.target}</span>
+                            </div>
+                            <h3 class="text-sm font-extrabold text-white mt-1">${ex.name}</h3>
+                        </div>
+                        <button onclick="deleteExercise('${dayKey}', ${exIdx})" class="text-slate-600 hover:text-rose-400 p-1" title="Eliminar ejercicio">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                    <div class="space-y-1">
+                        ${setsRows}
+                    </div>
+                    ${progressHTML}
+                `;
+                listContainer.appendChild(card);
+            });
+        }
+
+        function updateSetData(dayKey, exIdx, setIdx, field, val) {
+            const num = parseFloat(val) || 0;
+            appState.gymRoutine[dayKey].exercises[exIdx].sets[setIdx][field] = num;
+            saveState();
+            renderGymDay();
+        }
+
+        function toggleSetDone(dayKey, exIdx, setIdx) {
+            const set = appState.gymRoutine[dayKey].exercises[exIdx].sets[setIdx];
+            set.done = !set.done;
+            
+            // Actualizar récord histórico si completó serie con mayor 1RM
+            if (set.done) {
+                const est = calculateEpley1RM(set.kg, set.reps);
+                const ex = appState.gymRoutine[dayKey].exercises[exIdx];
+                if (est > (ex.lastBest1RM || 0)) {
+                    ex.lastBest1RM = est;
+                }
+                // Iniciar descanso sugerido automáticamente si no hay uno corriendo
+                if (!timerInterval) {
+                    const defaultRest = ex.type === 'Pliometría' ? 120 : 90;
+                    startRestTimer(defaultRest);
+                }
+            }
+            saveState();
+            renderGymDay();
+        }
+
+        function openAddExerciseModal() {
+            document.getElementById('modal-add-exercise').classList.remove('hidden');
+        }
+
+        function submitNewExercise(e) {
+            e.preventDefault();
+            const name = document.getElementById('new-ex-name').value.trim();
+            const type = document.getElementById('new-ex-type').value;
+            const setsCount = parseInt(document.getElementById('new-ex-sets').value) || 3;
+            const target = document.getElementById('new-ex-target').value.trim();
+
+            const sets = Array.from({ length: setsCount }, () => ({ kg: 0, reps: 8, done: false }));
+            appState.gymRoutine[appState.activeGymDay].exercises.push({
+                id: Date.now().toString(),
+                name,
+                type,
+                target,
+                lastBest1RM: 0,
+                sets
+            });
+
+            saveState();
+            renderGymDay();
+            closeModal('modal-add-exercise');
+            showToast('Ejercicio agregado al día', 'success');
+        }
+
+        function deleteExercise(dayKey, exIdx) {
+            appState.gymRoutine[dayKey].exercises.splice(exIdx, 1);
+            saveState();
+            renderGymDay();
+        }
+
+        // ==========================================
+        // 6. TEMPORIZADOR DE DESCANSO CON AUDIO WEB
+        // ==========================================
+        let timerInterval = null;
+        let timerSecondsLeft = 0;
+
+        function playBeepAlert() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, ctx.currentTime);
+                gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.35);
+            } catch (e) {}
+        }
+
+        function startRestTimer(seconds) {
+            stopRestTimer();
+            timerSecondsLeft = seconds;
+            updateTimerUI();
+            document.getElementById('timer-status').textContent = 'En curso...';
+
+            timerInterval = setInterval(() => {
+                timerSecondsLeft--;
+                if (timerSecondsLeft <= 0) {
+                    stopRestTimer();
+                    document.getElementById('timer-display').textContent = '00:00';
+                    document.getElementById('timer-status').textContent = '¡LISTO PARA SERIE!';
+                    playBeepAlert();
+                    showToast('⏱️ ¡Tiempo de descanso terminado!', 'success');
+                } else {
+                    updateTimerUI();
+                }
+            }, 1000);
+        }
+
+        function stopRestTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            timerSecondsLeft = 0;
+            updateTimerUI();
+            document.getElementById('timer-status').textContent = 'Descanso';
+        }
+
+        function updateTimerUI() {
+            const mins = Math.floor(timerSecondsLeft / 60).toString().padStart(2, '0');
+            const secs = (timerSecondsLeft % 60).toString().padStart(2, '0');
+            document.getElementById('timer-display').textContent = `${mins}:${secs}`;
+        }
+
+        // ==========================================
+        // 7. LÓGICA DE SALTO VERTICAL (META 100 CM)
+        // ==========================================
+        function renderJumps() {
+            const jumps = appState.jumps;
+            
+            // Calcular PRs por modalidad
+            const getPR = (type) => {
+                const filtered = jumps.filter(j => j.type === type);
+                if (filtered.length === 0) return 0;
+                return Math.max(...filtered.map(j => j.cm));
+            };
+
+            const prSpike = getPR('Spike');
+            const prCMJ = getPR('CMJ');
+            const prSJ = getPR('SJ');
+            const bestOverall = Math.max(prSpike, prCMJ, prSJ, 0);
+
+            document.getElementById('jump-best-overall').textContent = bestOverall.toFixed(1);
+            const rem = Math.max(0, 100 - bestOverall);
+            document.getElementById('jump-remaining-cm').textContent = rem === 0 ? '¡META LOGRADA!' : `${rem.toFixed(1)} cm`;
+            document.getElementById('jump-goal-bar').style.width = `${Math.min(100, bestOverall)}%`;
+
+            document.getElementById('pr-spike').textContent = prSpike > 0 ? `${prSpike.toFixed(1)} cm` : '-- cm';
+            document.getElementById('pr-cmj').textContent = prCMJ > 0 ? `${prCMJ.toFixed(1)} cm` : '-- cm';
+            document.getElementById('pr-sj').textContent = prSJ > 0 ? `${prSJ.toFixed(1)} cm` : '-- cm';
+
+            // Prellenar calculadora con el mejor Spike Jump
+            const calcVertInput = document.getElementById('calc-vertical');
+            if (!calcVertInput.value && bestOverall > 0) {
+                calcVertInput.value = bestOverall;
+            }
+            document.getElementById('standing-reach').value = appState.standingReach || 224;
+            calcVolleyReach();
+
+            // Renderizar historial ordenado por fecha descendente
+            const sorted = [...jumps].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const listEl = document.getElementById('jump-history-list');
+            
+            if (sorted.length === 0) {
+                listEl.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">No hay saltos registrados aún.</p>`;
+            } else {
+                listEl.innerHTML = sorted.map(j => {
+                    const colorMap = { Spike: 'text-electric', CMJ: 'text-emerald-400', SJ: 'text-amber-400' };
+                    return `
+                        <div class="flex items-center justify-between bg-obsidian/80 border border-steel/50 rounded-xl px-3 py-2">
+                            <div class="flex items-center gap-2.5">
+                                <span class="font-mono text-xs font-extrabold ${colorMap[j.type] || 'text-white'} w-12">${j.type}</span>
+                                <span class="font-mono text-xs text-slate-400">${j.date}</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-sm font-extrabold text-white">${j.cm.toFixed(1)} cm</span>
+                                <button onclick="deleteJumpRecord(${j.id})" class="text-slate-600 hover:text-rose-400">✕</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            renderJumpChart();
+        }
+
+        function addJumpRecord(e) {
+            e.preventDefault();
+            const type = document.getElementById('jump-type').value;
+            const cm = parseFloat(document.getElementById('jump-cm').value);
+            const date = document.getElementById('jump-date').value;
+
+            if (!cm || !date) return;
+
+            appState.jumps.push({
+                id: Date.now(),
+                type,
+                cm,
+                date
+            });
+
+            saveState();
+            renderJumps();
+            document.getElementById('jump-cm').value = '';
+            showToast(`Salto registrado: ${cm} cm (${type})`, 'success');
+        }
+
+        function deleteJumpRecord(id) {
+            appState.jumps = appState.jumps.filter(j => j.id !== id);
+            saveState();
+            renderJumps();
+        }
+
+        function calcVolleyReach() {
+            const standing = parseFloat(document.getElementById('standing-reach').value) || 0;
+            const vertical = parseFloat(document.getElementById('calc-vertical').value) || 0;
+            appState.standingReach = standing;
+            saveState();
+
+            const total = standing + vertical;
+            const overNet = total - 243; // Altura red masculina oficial: 2.43m (243 cm)
+
+            document.getElementById('total-reach-res').textContent = `${Math.round(total)} cm`;
+            const overEl = document.getElementById('over-net-res');
+            overEl.textContent = overNet >= 0 ? `+${Math.round(overNet)} cm` : `${Math.round(overNet)} cm`;
+            overEl.className = overNet >= 0 ? 'font-mono text-lg font-extrabold text-emerald-400' : 'font-mono text-lg font-extrabold text-rose-400';
+        }
+
+        // Gráfico Canvas Nativo de Alta Resolución
+        function renderJumpChart() {
+            const canvas = document.getElementById('jumpCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const filter = document.getElementById('chart-filter').value;
+
+            // Ajustar DPI para pantallas móviles Retina/AMOLED
+            const rect = canvas.parentElement.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+
+            const w = rect.width;
+            const h = rect.height;
+            ctx.clearRect(0, 0, w, h);
+
+            let data = [...appState.jumps].sort((a, b) => new Date(a.date) - new Date(b.date));
+            if (filter !== 'ALL') {
+                data = data.filter(d => d.type === filter);
+            }
+
+            if (data.length === 0) {
+                ctx.fillStyle = '#64748b';
+                ctx.font = '12px Inter';
+                ctx.textAlign = 'center';
+                ctx.fillText('Registra mediciones para ver tu curva', w / 2, h / 2);
+                return;
+            }
+
+            const padLeft = 32;
+            const padRight = 14;
+            const padTop = 16;
+            const padBottom = 24;
+            const chartW = w - padLeft - padRight;
+            const chartH = h - padTop - padBottom;
+
+            const minVal = Math.max(40, Math.min(...data.map(d => d.cm)) - 8);
+            const maxVal = 102; // Incluye línea meta de 100 cm
+
+            // Líneas horizontales de guía y línea meta 100cm
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
+            [60, 80, 100].forEach(val => {
+                if (val >= minVal && val <= maxVal) {
+                    const y = padTop + chartH - ((val - minVal) / (maxVal - minVal)) * chartH;
+                    ctx.beginPath();
+                    ctx.setLineDash(val === 100 ? [4, 4] : []);
+                    ctx.strokeStyle = val === 100 ? '#0ea5e9' : '#1e293b';
+                    ctx.moveTo(padLeft, y);
+                    ctx.lineTo(w - padRight, y);
+                    ctx.stroke();
+
+                    ctx.fillStyle = val === 100 ? '#38bdf8' : '#64748b';
+                    ctx.font = '10px JetBrains Mono';
+                    ctx.textAlign = 'right';
+                    ctx.fillText(val, padLeft - 6, y + 3);
+                }
+            });
+            ctx.setLineDash([]);
+
+            // Coordenadas de puntos
+            const points = data.map((d, idx) => {
+                const x = data.length === 1 
+                    ? padLeft + chartW / 2 
+                    : padLeft + (idx / (data.length - 1)) * chartW;
+                const y = padTop + chartH - ((d.cm - minVal) / (maxVal - minVal)) * chartH;
+                return { x, y, ...d };
+            });
+
+            // Área bajo la curva
+            if (points.length > 1) {
+                const grad = ctx.createLinearGradient(0, padTop, 0, padTop + chartH);
+                grad.addColorStop(0, 'rgba(14, 165, 233, 0.28)');
+                grad.addColorStop(1, 'rgba(14, 165, 233, 0.0)');
+
+                ctx.beginPath();
+                ctx.moveTo(points[0].x, padTop + chartH);
+                points.forEach(p => ctx.lineTo(p.x, p.y));
+                ctx.lineTo(points[points.length - 1].x, padTop + chartH);
+                ctx.closePath();
+                ctx.fillStyle = grad;
+                ctx.fill();
+
+                // Línea principal
+                ctx.beginPath();
+                ctx.strokeStyle = '#0ea5e9';
+                ctx.lineWidth = 2.5;
+                points.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+                ctx.stroke();
+            }
+
+            // Puntos y etiquetas
+            points.forEach((p, idx) => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+                ctx.fillStyle = '#090d16';
+                ctx.fill();
+                ctx.lineWidth = 2.5;
+                ctx.strokeStyle = p.type === 'Spike' ? '#38bdf8' : (p.type === 'CMJ' ? '#34d399' : '#fbbf24');
+                ctx.stroke();
+
+                // Mostrar etiqueta en primer, último y máximo
+                if (idx === 0 || idx === points.length - 1) {
+                    ctx.fillStyle = '#e2e8f0';
+                    ctx.font = 'bold 10px JetBrains Mono';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${p.cm}`, p.x, p.y - 8);
+                }
+            });
+        }
+
+        // ==========================================
+        // 8. UTILIDADES GENERALES Y RESPALDO JSON
+        // ==========================================
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function openBackupModal() {
+            document.getElementById('modal-backup').classList.remove('hidden');
+        }
+
+        function exportDataJSON() {
+            const dataStr = JSON.stringify(appState, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const dateTag = new Date().toISOString().split('T')[0];
+            a.href = url;
+            a.download = `reinaldo-tracker-backup-${dateTag}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('Respaldo JSON descargado correctamente', 'success');
+        }
+
+        function importDataJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (!imported.macroGoals || !imported.gymRoutine) {
+                        throw new Error('Formato inválido');
+                    }
+                    appState = { ...JSON.parse(JSON.stringify(DEFAULT_STATE)), ...imported };
+                    saveState();
+                    initApp();
+                    closeModal('modal-backup');
+                    showToast('¡Datos restaurados con éxito!', 'success');
+                } catch (err) {
+                    showToast('Error: El archivo JSON no es válido', 'error');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // ==========================================
+        // 9. INICIALIZACIÓN DE LA APLICACIÓN
+        // ==========================================
+        function initApp() {
+            // Establecer fecha actual por defecto en input de salto
+            const todayISO = new Date().toISOString().split('T')[0];
+            document.getElementById('jump-date').value = todayISO;
+
+            renderMacros();
+            renderGymDay();
+            renderJumps();
+            switchTab(appState.activeTab || 'macros');
+        }
+
+        window.addEventListener('resize', () => {
+            if (appState.activeTab === 'jump') renderJumpChart();
+        });
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>
