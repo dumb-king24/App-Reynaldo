@@ -89,7 +89,6 @@
         <h2 id="home-today-title" class="text-lg font-extrabold text-white leading-tight">--</h2>
         <p id="home-today-note" class="text-xs text-slate-400 mt-1">--</p>
 
-        <!-- Editor rápido de horario semanal -->
         <div id="schedule-editor" class="hidden mt-3 pt-3 border-t border-steel/60 space-y-2">
           <p class="text-[11px] text-slate-400">Personaliza qué haces cada día de la semana:</p>
           <div id="schedule-inputs" class="space-y-1.5"></div>
@@ -138,7 +137,6 @@
 
         <div id="checklist-items" class="space-y-2"></div>
 
-        <!-- Agregar nuevo hábito -->
         <div class="flex gap-2 pt-1">
           <input id="new-habit-input" type="text" placeholder="Agregar nuevo hábito..." class="flex-1 bg-obsidian border border-steel rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-electric">
           <button onclick="addHabit()" class="px-3 py-2 rounded-xl bg-electric/20 border border-electric/40 text-electricGlow font-bold text-xs">+</button>
@@ -158,7 +156,6 @@
     <!-- ==================== PESTAÑA 1: MACROS ==================== -->
     <section id="tab-macros" class="hidden space-y-4">
       
-      <!-- Resumen Macros + Botón Editar Metas -->
       <div class="bg-slateCard border border-steel/70 rounded-2xl p-4 space-y-3">
         <div class="flex items-center justify-between">
           <div>
@@ -174,7 +171,6 @@
           </div>
         </div>
 
-        <!-- Editor de Metas de Macros -->
         <div id="macro-goals-editor" class="hidden pt-2 border-t border-steel/60 space-y-2">
           <p class="text-[11px] text-slate-400">Define tus metas diarias:</p>
           <div class="grid grid-cols-4 gap-2">
@@ -198,7 +194,6 @@
           <button onclick="saveMacroGoals()" class="w-full py-1.5 rounded-lg bg-electric text-obsidian font-bold text-xs">Actualizar Metas</button>
         </div>
 
-        <!-- Barras P / C / G -->
         <div class="grid grid-cols-3 gap-2.5 pt-1">
           <div class="bg-obsidian/70 rounded-xl p-2.5 border border-steel/40">
             <div class="flex justify-between text-[11px] font-mono mb-1">
@@ -230,14 +225,12 @@
         </div>
       </div>
 
-      <!-- Selector de Comida (3 Comidas) -->
       <div class="grid grid-cols-3 gap-2 bg-slateCard p-1.5 rounded-xl border border-steel/60">
         <button onclick="setMeal('Desayuno')" id="meal-btn-Desayuno" class="meal-tab py-2 rounded-lg text-xs font-bold transition bg-electric text-obsidian">Desayuno</button>
         <button onclick="setMeal('Almuerzo')" id="meal-btn-Almuerzo" class="meal-tab py-2 rounded-lg text-xs font-bold transition text-slate-400">Almuerzo</button>
         <button onclick="setMeal('Once')" id="meal-btn-Once" class="meal-tab py-2 rounded-lg text-xs font-bold transition text-slate-400">Once</button>
       </div>
 
-      <!-- Agregar Alimento Rápido o Crear Nuevo Alimento -->
       <div class="bg-slateCard border border-steel/70 rounded-2xl p-4 space-y-3">
         <div class="flex items-center justify-between">
           <span class="text-xs font-mono uppercase text-slate-300 font-bold">Registrar en <span id="current-meal-label" class="text-electricGlow">Desayuno</span></span>
@@ -268,7 +261,6 @@
         <div id="meal-entries-list" class="space-y-2 pt-1"></div>
       </div>
 
-      <!-- Historial de Días Cerrados -->
       <div class="bg-slateCard border border-steel/70 rounded-2xl p-4 space-y-2">
         <span class="text-xs font-mono uppercase text-slate-400 font-bold">Historial Reciente</span>
         <div id="macro-history-list" class="space-y-1.5 text-xs"></div>
@@ -355,79 +347,31 @@
     </div>
   </nav>
 
-  <!-- MODAL ENCUESTA INICIAL (RUTINA + MACROS) -->
+  <!-- MODAL ENCUESTA INTERACTIVA PASO A PASO (WIZARD) -->
   <div id="onboarding-modal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-slateCard border border-electric/50 rounded-2xl p-5 max-w-md w-full space-y-3.5 my-auto shadow-2xl">
-      <div class="flex items-start justify-between">
-        <div>
-          <span class="text-[10px] font-mono uppercase text-electricGlow font-bold">Configuración Rápida</span>
-          <h3 class="text-base font-extrabold text-white">Encuesta de Rutina y Macros</h3>
-          <p class="text-[11px] text-slate-400">Calcula tus calorías/macros y arma tu rutina para los días activos.</p>
+    <div class="bg-slateCard border border-electric/50 rounded-2xl p-5 max-w-md w-full space-y-4 my-auto shadow-2xl">
+      
+      <!-- Encabezado y Barra de Progreso de Pasos -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <span id="wizard-step-label" class="text-[11px] font-mono uppercase text-electricGlow font-bold">Pregunta 1 de 6</span>
+          <button onclick="dismissOnboarding()" class="text-xs text-slate-400 hover:text-white px-2 py-0.5 rounded bg-obsidian/60">Saltar ✕</button>
         </div>
-        <button onclick="dismissOnboarding()" class="text-slate-400 hover:text-white text-sm px-2">✕</button>
-      </div>
-
-      <div class="space-y-2.5 text-xs">
-        <div class="grid grid-cols-3 gap-2">
-          <div>
-            <label class="text-[10px] text-slate-400 block mb-1">Peso (kg)</label>
-            <input id="ob-weight" type="number" value="83" class="w-full bg-obsidian border border-steel rounded-xl px-2.5 py-2 font-mono text-white">
-          </div>
-          <div>
-            <label class="text-[10px] text-slate-400 block mb-1">Estatura (cm)</label>
-            <input id="ob-height" type="number" value="174" class="w-full bg-obsidian border border-steel rounded-xl px-2.5 py-2 font-mono text-white">
-          </div>
-          <div>
-            <label class="text-[10px] text-slate-400 block mb-1">Edad</label>
-            <input id="ob-age" type="number" value="19" class="w-full bg-obsidian border border-steel rounded-xl px-2.5 py-2 font-mono text-white">
-          </div>
-        </div>
-
-        <div>
-          <label class="text-[11px] text-slate-300 font-semibold block mb-1">Objetivo de composición y rendimiento</label>
-          <select id="ob-goal" class="w-full bg-obsidian border border-steel rounded-xl px-3 py-2 text-white">
-            <option value="potencia_salto">Explosividad / Potencia de salto (ligero superávit / recomposición)</option>
-            <option value="recomp_fuerza">Recomposición corporal & fuerza (calorías equilibradas, alta proteína)</option>
-            <option value="hipertrofia">Ganancia muscular / volumen</option>
-            <option value="definicion">Bajar grasa manteniendo masa muscular</option>
-          </select>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="text-[11px] text-slate-300 font-semibold block mb-1">Actividad semanal</label>
-            <select id="ob-activity" class="w-full bg-obsidian border border-steel rounded-xl px-2.5 py-2 text-white">
-              <option value="1.55">Moderada (3-4 días/sem)</option>
-              <option value="1.725" selected>Alta (gym + deporte)</option>
-              <option value="1.9">Muy alta (doble sesión)</option>
-            </select>
-          </div>
-          <div>
-            <label class="text-[11px] text-slate-300 font-semibold block mb-1">Equipo / Lugar</label>
-            <select id="ob-equip" class="w-full bg-obsidian border border-steel rounded-xl px-2.5 py-2 text-white">
-              <option value="gimnasio">Gimnasio completo</option>
-              <option value="casa_barra">Casa + barra / calistenia</option>
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label class="text-[11px] text-slate-300 font-semibold block mb-1">¿Qué días de la semana harás gym/pliometría?</label>
-          <div id="ob-days-selector" class="grid grid-cols-7 gap-1"></div>
-        </div>
-
-        <div>
-          <label class="text-[10px] font-mono text-slate-400 block mb-1">Gemini API Key (opcional)</label>
-          <input id="ob-apikey" type="password" placeholder="Vacío = cálculo y rutina al instante" class="w-full bg-obsidian border border-steel/70 rounded-xl px-3 py-1.5 text-xs font-mono text-white">
+        <div class="w-full h-1.5 bg-obsidian rounded-full overflow-hidden">
+          <div id="wizard-progress-bar" class="h-full bg-electric transition-all duration-300" style="width: 16.6%"></div>
         </div>
       </div>
 
-      <div class="flex gap-2 pt-1">
-        <button onclick="dismissOnboarding()" class="px-3 py-2.5 rounded-xl bg-obsidian border border-steel text-slate-300 font-semibold text-xs">
-          Ahora no
+      <!-- Contenedor Dinámico de Cada Paso/Pregunta -->
+      <div id="wizard-step-container" class="min-h-[210px] flex flex-col justify-center space-y-3"></div>
+
+      <!-- Botones Atrás / Siguiente / Finalizar -->
+      <div class="flex items-center justify-between gap-2 pt-2 border-t border-steel/60">
+        <button id="wizard-prev-btn" onclick="prevWizardStep()" class="px-4 py-2.5 rounded-xl bg-obsidian border border-steel text-xs font-bold text-slate-300 disabled:opacity-35">
+          ← Atrás
         </button>
-        <button onclick="applyOnboardingSurvey()" class="flex-1 py-2.5 rounded-xl bg-electric text-obsidian font-extrabold text-xs active:scale-95 transition">
-          Calcular Macros y Aplicar Rutina ✓
+        <button id="wizard-next-btn" onclick="nextWizardStep()" class="flex-1 py-2.5 rounded-xl bg-electric text-obsidian font-extrabold text-xs active:scale-95 transition">
+          Siguiente →
         </button>
       </div>
     </div>
@@ -444,7 +388,6 @@
         <button onclick="closeAccountModal()" class="text-slate-400 hover:text-white">✕</button>
       </div>
 
-      <!-- Registro / Inicio de sesión de perfil -->
       <div class="bg-obsidian/80 border border-steel/60 rounded-xl p-3 space-y-2">
         <p class="text-[11px] font-semibold text-slate-200">Registrarse o Iniciar Sesión (guarda en este dispositivo)</p>
         <input id="acc-user" type="text" placeholder="Nombre de usuario o correo" class="w-full bg-slateCard border border-steel rounded-lg px-3 py-2 text-xs text-white">
@@ -455,7 +398,6 @@
         </div>
       </div>
 
-      <!-- Respaldo y Restauración JSON para mover entre dispositivos -->
       <div class="space-y-2 pt-1 border-t border-steel/50">
         <p class="text-[11px] text-slate-400">Para pasar tu cuenta a otro dispositivo (ej. de PC a celular o tras limpiar navegador), exporta tu archivo JSON y cárgalo allá:</p>
         <button onclick="exportData()" class="w-full py-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-bold text-xs">Descargar Respaldo de Cuenta (.json)</button>
@@ -563,8 +505,19 @@
       renderHome();
     }
 
-    // ==================== ENCUESTA AL INICIAR ====================
-    let tempOnboardingDays = new Set();
+    // ==================== ENCUESTA INTERACTIVA POR PANTALLAS ====================
+    const TOTAL_WIZARD_STEPS = 6;
+    let wizardStep = 1;
+    let wizardAnswers = {
+      goal: 'recomp_fuerza',
+      weight: 83,
+      height: 174,
+      age: 19,
+      activity: 1.725,
+      equip: 'gimnasio',
+      days: ['Martes', 'Miércoles', 'Jueves', 'Viernes'],
+      sessionTime: 60
+    };
 
     function checkInitialOnboarding() {
       if (!state.onboardingCompleted) {
@@ -574,9 +527,18 @@
 
     function openOnboardingModal() {
       const activeList = WEEK_DAYS.filter(d => state.gymDays[d].active);
-      tempOnboardingDays = new Set(activeList.length ? activeList : ['Martes', 'Miércoles', 'Jueves', 'Viernes']);
-      if (state.geminiApiKey) document.getElementById('ob-apikey').value = state.geminiApiKey;
-      renderOnboardingDays();
+      wizardAnswers = {
+        goal: 'recomp_fuerza',
+        weight: 83,
+        height: 174,
+        age: 19,
+        activity: 1.725,
+        equip: 'gimnasio',
+        days: activeList.length ? activeList : ['Martes', 'Miércoles', 'Jueves', 'Viernes'],
+        sessionTime: 60
+      };
+      wizardStep = 1;
+      renderWizardStep();
       document.getElementById('onboarding-modal').classList.remove('hidden');
     }
 
@@ -586,29 +548,212 @@
       document.getElementById('onboarding-modal').classList.add('hidden');
     }
 
-    function renderOnboardingDays() {
-      const box = document.getElementById('ob-days-selector');
-      box.innerHTML = WEEK_DAYS.map(d => {
-        const active = tempOnboardingDays.has(d);
-        return `
-          <button type="button" onclick="toggleOnboardingDay('${d}')" class="py-2 rounded-lg text-[11px] font-bold border transition ${
-            active ? 'bg-electric text-obsidian border-electricGlow' : 'bg-obsidian text-slate-400 border-steel/50'
-          }">${SHORT_DAYS[d]}</button>
-        `;
-      }).join('');
+    function collectCurrentStepInputs() {
+      if (wizardStep === 2) {
+        wizardAnswers.weight = Number(document.getElementById('wz-weight')?.value) || 83;
+        wizardAnswers.height = Number(document.getElementById('wz-height')?.value) || 174;
+        wizardAnswers.age = Number(document.getElementById('wz-age')?.value) || 19;
+      }
     }
 
-    function toggleOnboardingDay(d) {
-      if (tempOnboardingDays.has(d)) {
-        if (tempOnboardingDays.size > 1) tempOnboardingDays.delete(d);
+    function nextWizardStep() {
+      collectCurrentStepInputs();
+      if (wizardStep < TOTAL_WIZARD_STEPS) {
+        wizardStep++;
+        renderWizardStep();
       } else {
-        tempOnboardingDays.add(d);
+        applyWizardSurvey();
       }
-      renderOnboardingDays();
+    }
+
+    function prevWizardStep() {
+      collectCurrentStepInputs();
+      if (wizardStep > 1) {
+        wizardStep--;
+        renderWizardStep();
+      }
+    }
+
+    function selectWizardOption(field, value, autoAdvance = false) {
+      wizardAnswers[field] = value;
+      renderWizardStep();
+      if (autoAdvance && wizardStep < TOTAL_WIZARD_STEPS) {
+        setTimeout(() => {
+          wizardStep++;
+          renderWizardStep();
+        }, 140);
+      }
+    }
+
+    function toggleWizardDay(day) {
+      const idx = wizardAnswers.days.indexOf(day);
+      if (idx >= 0) {
+        if (wizardAnswers.days.length > 1) wizardAnswers.days.splice(idx, 1);
+      } else {
+        wizardAnswers.days.push(day);
+      }
+      renderWizardStep();
+    }
+
+    function renderWizardStep() {
+      document.getElementById('wizard-step-label').textContent = `Pregunta ${wizardStep} de ${TOTAL_WIZARD_STEPS}`;
+      document.getElementById('wizard-progress-bar').style.width = `${(wizardStep / TOTAL_WIZARD_STEPS) * 100}%`;
+      document.getElementById('wizard-prev-btn').disabled = wizardStep === 1;
+
+      const nextBtn = document.getElementById('wizard-next-btn');
+      nextBtn.textContent = wizardStep === TOTAL_WIZARD_STEPS ? 'Aplicar Macros y Rutina ✓' : 'Siguiente →';
+
+      const container = document.getElementById('wizard-step-container');
+
+      if (wizardStep === 1) {
+        const goals = [
+          { id: 'potencia_salto', title: '⚡ Potencia y Salto', desc: 'Explosividad, pliometría y fuerza útil' },
+          { id: 'recomp_fuerza', title: '🎯 Recomposición y Fuerza', desc: 'Ganar músculo y fuerza manteniendo control' },
+          { id: 'hipertrofia', title: '💪 Volumen / Masa Muscular', desc: 'Enfoque en hipertrofia y superávit calórico' },
+          { id: 'definicion', title: '🔥 Definición', desc: 'Bajar grasa cuidando proteína y fuerza' }
+        ];
+        container.innerHTML = `
+          <div>
+            <h3 class="text-base font-extrabold text-white">¿Cuál es tu objetivo principal?</h3>
+            <p class="text-[11px] text-slate-400">Toca una opción para elegirla:</p>
+          </div>
+          <div class="grid grid-cols-1 gap-2">
+            ${goals.map(g => {
+              const selected = wizardAnswers.goal === g.id;
+              return `
+                <button type="button" onclick="selectWizardOption('goal', '${g.id}', true)" class="text-left p-3 rounded-xl border transition ${
+                  selected ? 'bg-electric/20 border-electric text-white' : 'bg-obsidian/80 border-steel/60 text-slate-300 hover:border-steel'
+                }">
+                  <div class="text-xs font-extrabold">${g.title}</div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">${g.desc}</div>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        `;
+      } else if (wizardStep === 2) {
+        container.innerHTML = `
+          <div>
+            <h3 class="text-base font-extrabold text-white">Tus datos base para calcular macros</h3>
+            <p class="text-[11px] text-slate-400">Ajusta tus valores actuales antes de continuar:</p>
+          </div>
+          <div class="grid grid-cols-3 gap-2.5 pt-1">
+            <div class="bg-obsidian/80 border border-steel/60 rounded-xl p-2.5">
+              <label class="text-[10px] font-mono text-slate-400 block mb-1">PESO (KG)</label>
+              <input id="wz-weight" type="number" value="${wizardAnswers.weight}" class="w-full bg-slateCard border border-steel rounded-lg px-2 py-2 text-sm font-mono font-bold text-white text-center">
+            </div>
+            <div class="bg-obsidian/80 border border-steel/60 rounded-xl p-2.5">
+              <label class="text-[10px] font-mono text-slate-400 block mb-1">ESTATURA (CM)</label>
+              <input id="wz-height" type="number" value="${wizardAnswers.height}" class="w-full bg-slateCard border border-steel rounded-lg px-2 py-2 text-sm font-mono font-bold text-white text-center">
+            </div>
+            <div class="bg-obsidian/80 border border-steel/60 rounded-xl p-2.5">
+              <label class="text-[10px] font-mono text-slate-400 block mb-1">EDAD</label>
+              <input id="wz-age" type="number" value="${wizardAnswers.age}" class="w-full bg-slateCard border border-steel rounded-lg px-2 py-2 text-sm font-mono font-bold text-white text-center">
+            </div>
+          </div>
+        `;
+      } else if (wizardStep === 3) {
+        const acts = [
+          { val: 1.55, title: 'Actividad Moderada', desc: 'Entrenamientos regulares 3-4 días/sem' },
+          { val: 1.725, title: 'Actividad Alta', desc: 'Gimnasio + deporte o rutina exigente' },
+          { val: 1.9, title: 'Actividad Muy Alta', desc: 'Doble sesión o desgaste físico intenso' }
+        ];
+        container.innerHTML = `
+          <div>
+            <h3 class="text-base font-extrabold text-white">¿Qué nivel de actividad tienes?</h3>
+            <p class="text-[11px] text-slate-400">Selecciona tu gasto semanal habitual:</p>
+          </div>
+          <div class="space-y-2">
+            ${acts.map(a => {
+              const selected = wizardAnswers.activity === a.val;
+              return `
+                <button type="button" onclick="selectWizardOption('activity', ${a.val}, true)" class="w-full text-left p-3 rounded-xl border transition ${
+                  selected ? 'bg-electric/20 border-electric text-white' : 'bg-obsidian/80 border-steel/60 text-slate-300'
+                }">
+                  <div class="text-xs font-extrabold">${a.title}</div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">${a.desc}</div>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        `;
+      } else if (wizardStep === 4) {
+        const equips = [
+          { id: 'gimnasio', title: '🏋️ Gimnasio Completo', desc: 'Barras, mancuernas, máquinas o cajón' },
+          { id: 'casa_barra', title: '🏠 Casa + Barra / Peso Corporal', desc: 'Dominadas, flexiones y ejercicios en casa' }
+        ];
+        container.innerHTML = `
+          <div>
+            <h3 class="text-base font-extrabold text-white">¿Con qué equipo vas a entrenar?</h3>
+            <p class="text-[11px] text-slate-400">Adaptamos los ejercicios a tu espacio:</p>
+          </div>
+          <div class="space-y-2.5">
+            ${equips.map(eq => {
+              const selected = wizardAnswers.equip === eq.id;
+              return `
+                <button type="button" onclick="selectWizardOption('equip', '${eq.id}', true)" class="w-full text-left p-3.5 rounded-xl border transition ${
+                  selected ? 'bg-electric/20 border-electric text-white' : 'bg-obsidian/80 border-steel/60 text-slate-300'
+                }">
+                  <div class="text-xs font-extrabold">${eq.title}</div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">${eq.desc}</div>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        `;
+      } else if (wizardStep === 5) {
+        container.innerHTML = `
+          <div>
+            <h3 class="text-base font-extrabold text-white">¿Qué días harás rutina de gym/pliometría?</h3>
+            <p class="text-[11px] text-slate-400">Toca uno o varios días para activarlos:</p>
+          </div>
+          <div class="grid grid-cols-7 gap-1.5 pt-1">
+            ${WEEK_DAYS.map(d => {
+              const active = wizardAnswers.days.includes(d);
+              return `
+                <button type="button" onclick="toggleWizardDay('${d}')" class="py-2.5 rounded-xl text-xs font-bold border transition ${
+                  active ? 'bg-electric text-obsidian border-electricGlow' : 'bg-obsidian text-slate-400 border-steel/60'
+                }">${SHORT_DAYS[d]}</button>
+              `;
+            }).join('')}
+          </div>
+          <p class="text-[11px] font-mono text-emerald-400 pt-1">
+            Seleccionados: ${wizardAnswers.days.map(d => SHORT_DAYS[d]).join(' • ')}
+          </p>
+        `;
+      } else if (wizardStep === 6) {
+        const macros = calculateMacrosFromSurvey(
+          wizardAnswers.weight,
+          wizardAnswers.height,
+          wizardAnswers.age,
+          wizardAnswers.activity,
+          wizardAnswers.goal
+        );
+        container.innerHTML = `
+          <div>
+            <h3 class="text-base font-extrabold text-white">Resumen Calculado para Ti</h3>
+            <p class="text-[11px] text-slate-400">Revisa y aplica a tu app:</p>
+          </div>
+          <div class="bg-obsidian/90 border border-electric/40 rounded-xl p-3 space-y-2">
+            <div class="flex justify-between items-baseline">
+              <span class="text-xs text-slate-400">Calorías Diarias</span>
+              <span class="text-lg font-mono font-extrabold text-electricGlow">${macros.kcal} kcal</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 text-center font-mono text-xs pt-1 border-t border-steel/50">
+              <div><span class="text-slate-400 block text-[10px]">PROT</span><strong class="text-emerald-400">${macros.p}g</strong></div>
+              <div><span class="text-slate-400 block text-[10px]">CARB</span><strong class="text-sky-300">${macros.c}g</strong></div>
+              <div><span class="text-slate-400 block text-[10px]">GRASA</span><strong class="text-amber-400">${macros.f}g</strong></div>
+            </div>
+          </div>
+          <div class="bg-obsidian/70 border border-steel/50 rounded-xl p-3 text-xs space-y-1">
+            <div class="text-slate-400 text-[11px]">Días de rutina asignados (${wizardAnswers.days.length}):</div>
+            <div class="font-bold text-white">${wizardAnswers.days.join(', ')}</div>
+          </div>
+        `;
+      }
     }
 
     function calculateMacrosFromSurvey(weight, height, age, activity, goal) {
-      // Mifflin-St Jeor base masculina
       const bmr = 10 * weight + 6.25 * height - 5 * age + 5;
       let tdee = bmr * activity;
       if (goal === 'potencia_salto') tdee += 150;
@@ -659,20 +804,17 @@
       return out;
     }
 
-    function applyOnboardingSurvey() {
-      const weight = Number(document.getElementById('ob-weight').value) || 83;
-      const height = Number(document.getElementById('ob-height').value) || 174;
-      const age = Number(document.getElementById('ob-age').value) || 19;
-      const goal = document.getElementById('ob-goal').value;
-      const activity = Number(document.getElementById('ob-activity').value) || 1.725;
-      const equip = document.getElementById('ob-equip').value;
-      const apiKey = document.getElementById('ob-apikey').value.trim();
-      if (apiKey) state.geminiApiKey = apiKey;
+    function applyWizardSurvey() {
+      collectCurrentStepInputs();
+      state.macroGoals = calculateMacrosFromSurvey(
+        wizardAnswers.weight,
+        wizardAnswers.height,
+        wizardAnswers.age,
+        wizardAnswers.activity,
+        wizardAnswers.goal
+      );
 
-      state.macroGoals = calculateMacrosFromSurvey(weight, height, age, activity, goal);
-
-      const selectedDays = Array.from(tempOnboardingDays);
-      const generated = buildRoutineForDays(selectedDays, goal, equip);
+      const generated = buildRoutineForDays(wizardAnswers.days, wizardAnswers.goal, wizardAnswers.equip);
 
       WEEK_DAYS.forEach(d => {
         if (generated[d]) {
@@ -686,7 +828,7 @@
         }
       });
 
-      state.currentGymDay = selectedDays[0] || 'Martes';
+      state.currentGymDay = wizardAnswers.days[0] || 'Martes';
       state.onboardingCompleted = true;
       saveState();
       document.getElementById('onboarding-modal').classList.add('hidden');
