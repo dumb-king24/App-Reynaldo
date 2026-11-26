@@ -61,10 +61,15 @@
         <p id="header-date" class="text-[11px] font-mono text-slate-400">--</p>
       </div>
     </div>
-    <button onclick="openBackupModal()" class="px-2.5 py-1.5 rounded-lg bg-slateCard border border-steel text-xs font-medium text-slate-300 active:scale-95 transition flex items-center gap-1.5">
-      <svg class="w-3.5 h-3.5 text-electricGlow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-      Datos
-    </button>
+    <div class="flex items-center gap-1.5">
+      <button onclick="openOnboardingModal()" class="px-2.5 py-1.5 rounded-lg bg-electric/15 border border-electric/40 text-xs font-semibold text-electricGlow active:scale-95 transition">
+        Encuesta
+      </button>
+      <button onclick="openAccountModal()" class="px-2.5 py-1.5 rounded-lg bg-slateCard border border-steel text-xs font-medium text-slate-200 active:scale-95 transition flex items-center gap-1">
+        <span id="header-account-badge" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span id="header-account-name">Cuenta</span>
+      </button>
+    </div>
   </header>
 
   <!-- CONTENIDO PRINCIPAL -->
@@ -92,48 +97,31 @@
         </div>
       </div>
 
-      <!-- Tarjetas Resumen Rápido (Macros & Salto) -->
-      <div class="grid grid-cols-2 gap-3">
-        <!-- Resumen Macros -->
-        <div onclick="switchTab('macros')" class="bg-slateCard border border-steel/70 rounded-2xl p-3.5 active:scale-98 transition cursor-pointer">
-          <div class="flex items-center justify-between mb-1">
-            <span class="text-[11px] font-mono uppercase text-slate-400">Calorías Hoy</span>
-            <span class="text-xs text-electricGlow">→</span>
-          </div>
-          <div class="flex items-baseline gap-1">
-            <span id="home-kcal-val" class="text-xl font-mono font-extrabold text-white tabular-nums">0</span>
-            <span id="home-kcal-goal" class="text-xs font-mono text-slate-400">/ 2550</span>
-          </div>
-          <div class="w-full h-1.5 bg-obsidian rounded-full overflow-hidden mt-2">
-            <div id="home-kcal-bar" class="h-full bg-electric transition-all duration-300" style="width: 0%"></div>
-          </div>
-          <p id="home-prot-text" class="text-[11px] font-mono text-emerald-400 mt-1.5">0g / 185g Prot</p>
+      <!-- Tarjeta Resumen Rápido de Macros -->
+      <div onclick="switchTab('macros')" class="bg-slateCard border border-steel/70 rounded-2xl p-4 active:scale-98 transition cursor-pointer">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-[11px] font-mono uppercase text-slate-400">Calorías & Macros Hoy</span>
+          <span class="text-xs text-electricGlow font-semibold">Ir a Macros →</span>
         </div>
-
-        <!-- Resumen Salto -->
-        <div onclick="switchTab('jump')" class="bg-slateCard border border-steel/70 rounded-2xl p-3.5 active:scale-98 transition cursor-pointer">
-          <div class="flex items-center justify-between mb-1">
-            <span class="text-[11px] font-mono uppercase text-slate-400">Salto Máx</span>
-            <span class="text-xs text-electricGlow">→</span>
+        <div class="flex items-baseline justify-between">
+          <div class="flex items-baseline gap-1.5">
+            <span id="home-kcal-val" class="text-2xl font-mono font-extrabold text-white tabular-nums">0</span>
+            <span id="home-kcal-goal" class="text-xs font-mono text-slate-400">/ 2550 kcal</span>
           </div>
-          <div class="flex items-baseline gap-1">
-            <span id="home-jump-val" class="text-xl font-mono font-extrabold text-white tabular-nums">--</span>
-            <span id="home-jump-goal" class="text-xs font-mono text-slate-400">/ 100 cm</span>
-          </div>
-          <div class="w-full h-1.5 bg-obsidian rounded-full overflow-hidden mt-2">
-            <div id="home-jump-bar" class="h-full bg-amber-400 transition-all duration-300" style="width: 0%"></div>
-          </div>
-          <p id="home-jump-diff" class="text-[11px] font-mono text-amber-300 mt-1.5">Registra tu marca</p>
+          <span id="home-prot-text" class="text-xs font-mono font-bold text-emerald-400">0g / 185g Prot</span>
+        </div>
+        <div class="w-full h-2 bg-obsidian rounded-full overflow-hidden mt-2.5">
+          <div id="home-kcal-bar" class="h-full bg-electric transition-all duration-300" style="width: 0%"></div>
         </div>
       </div>
 
-      <!-- Último Entrenamiento / Acceso Directo Gym -->
-      <div onclick="switchTab('gym')" class="bg-slateCard border border-steel/70 rounded-2xl p-3.5 flex items-center justify-between active:scale-98 transition cursor-pointer">
+      <!-- Acceso Directo Gym -->
+      <div onclick="switchTab('gym')" class="bg-slateCard border border-steel/70 rounded-2xl p-4 flex items-center justify-between active:scale-98 transition cursor-pointer">
         <div>
           <span class="text-[11px] font-mono uppercase text-slate-400">Gimnasio & Pliometría</span>
-          <p id="home-gym-summary" class="text-sm font-bold text-white mt-0.5">Toca para registrar series y cargas</p>
+          <p id="home-gym-active-days" class="text-sm font-bold text-white mt-0.5">Toca para gestionar días y rutinas</p>
         </div>
-        <div class="w-9 h-9 rounded-xl bg-electric/15 border border-electric/30 flex items-center justify-center text-electricGlow font-bold">
+        <div class="w-10 h-10 rounded-xl bg-electric/15 border border-electric/30 flex items-center justify-center text-electricGlow font-bold">
           🏋️
         </div>
       </div>
@@ -152,7 +140,7 @@
 
         <!-- Agregar nuevo hábito -->
         <div class="flex gap-2 pt-1">
-          <input id="new-habit-input" type="text" placeholder="Agregar nuevo hábito (ej. Dominadas)..." class="flex-1 bg-obsidian border border-steel rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-electric">
+          <input id="new-habit-input" type="text" placeholder="Agregar nuevo hábito..." class="flex-1 bg-obsidian border border-steel rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-electric">
           <button onclick="addHabit()" class="px-3 py-2 rounded-xl bg-electric/20 border border-electric/40 text-electricGlow font-bold text-xs">+</button>
         </div>
       </div>
@@ -163,7 +151,7 @@
           <span class="text-xs font-mono uppercase tracking-wider text-slate-300 font-bold">Notas / Recordatorios</span>
           <span id="notes-saved-badge" class="text-[10px] font-mono text-emerald-400 opacity-0 transition-opacity">Guardado</span>
         </div>
-        <textarea id="home-notes" rows="2" oninput="saveNotes()" placeholder="Escribe aquí tus notas libres, sensaciones de rodilla, ajustes de peso..." class="w-full bg-obsidian border border-steel rounded-xl p-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-electric"></textarea>
+        <textarea id="home-notes" rows="2" oninput="saveNotes()" placeholder="Escribe aquí tus notas libres, sensaciones, ajustes de peso..." class="w-full bg-obsidian border border-steel rounded-xl p-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-electric"></textarea>
       </div>
     </section>
 
@@ -256,7 +244,6 @@
           <button onclick="toggleNewFoodForm()" class="text-xs font-semibold text-electricGlow">+ Crear Alimento</button>
         </div>
 
-        <!-- Formulario para crear tu propio alimento (por cada 100g en crudo) -->
         <div id="new-food-form" class="hidden bg-obsidian/90 border border-electric/30 rounded-xl p-3 space-y-2.5">
           <p class="text-[11px] text-slate-300 font-semibold">Nuevo alimento (valores cada 100g en crudo):</p>
           <input id="nf-name" type="text" placeholder="Nombre (ej. Pechuga pollo cruda)" class="w-full bg-slateCard border border-steel rounded-lg px-2.5 py-1.5 text-xs text-white">
@@ -269,7 +256,6 @@
           <button onclick="createCustomFood()" class="w-full py-2 rounded-lg bg-electric text-obsidian font-bold text-xs">Guardar en mi lista</button>
         </div>
 
-        <!-- Selector de alimento + gramos -->
         <div class="flex gap-2">
           <select id="food-select" class="flex-1 bg-obsidian border border-steel rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-electric"></select>
           <div class="relative w-24">
@@ -279,7 +265,6 @@
           <button onclick="addFoodEntry()" class="px-4 py-2.5 rounded-xl bg-electric text-obsidian font-extrabold text-xs active:scale-95 transition">Añadir</button>
         </div>
 
-        <!-- Lista de alimentos agregados hoy -->
         <div id="meal-entries-list" class="space-y-2 pt-1"></div>
       </div>
 
@@ -292,109 +277,47 @@
 
     <!-- ==================== PESTAÑA 2: GYM & PLIOMETRÍA ==================== -->
     <section id="tab-gym" class="hidden space-y-4">
-      
-      <!-- Selector de Día (Martes a Viernes + Personalizable) -->
-      <div class="grid grid-cols-4 gap-1.5 bg-slateCard p-1.5 rounded-xl border border-steel/60">
-        <button onclick="setGymDay('Martes')" id="gym-btn-Martes" class="gym-tab py-2 rounded-lg text-xs font-bold transition bg-electric text-obsidian">Martes</button>
-        <button onclick="setGymDay('Miércoles')" id="gym-btn-Miércoles" class="gym-tab py-2 rounded-lg text-xs font-bold transition text-slate-400">Miérc.</button>
-        <button onclick="setGymDay('Jueves')" id="gym-btn-Jueves" class="gym-tab py-2 rounded-lg text-xs font-bold transition text-slate-400">Jueves</button>
-        <button onclick="setGymDay('Viernes')" id="gym-btn-Viernes" class="gym-tab py-2 rounded-lg text-xs font-bold transition text-slate-400">Viernes</button>
-      </div>
 
-      <!-- Cabecera del Día + Botón Agregar Ejercicio -->
-      <div class="bg-slateCard border border-steel/70 rounded-2xl p-4 space-y-3">
+      <div class="bg-slateCard border border-steel/70 rounded-2xl p-3.5 space-y-2.5">
         <div class="flex items-center justify-between">
           <div>
-            <input id="gym-day-focus" type="text" onchange="updateGymDayFocus()" class="bg-transparent text-sm font-extrabold text-white border-b border-transparent focus:border-electric focus:outline-none w-full" placeholder="Enfoque del día (ej. Tren Inferior + Plio)">
-            <p class="text-[11px] text-slate-400">Toca el título arriba para renombrar este día</p>
+            <span class="text-[11px] font-mono uppercase text-slate-300 font-bold">Días de la Semana</span>
+            <p class="text-[11px] text-slate-400">Toca un día para verlo; usa el check para activar/desactivar entreno</p>
+          </div>
+          <button onclick="openOnboardingModal()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-electric to-sky-400 text-obsidian font-extrabold text-xs shadow">
+            ✨ Encuesta
+          </button>
+        </div>
+
+        <div id="week-days-grid" class="grid grid-cols-7 gap-1"></div>
+      </div>
+
+      <div class="bg-slateCard border border-steel/70 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex-1">
+            <div class="flex items-center gap-2">
+              <span id="gym-selected-day-title" class="text-xs font-mono uppercase text-electricGlow font-extrabold">MARTES</span>
+              <label class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 bg-obsidian px-2 py-0.5 rounded-lg border border-steel/60 cursor-pointer">
+                <input id="gym-day-active-checkbox" type="checkbox" onchange="toggleCurrentGymDayActive()" class="accent-sky-400 rounded">
+                <span>Día de gym</span>
+              </label>
+            </div>
+            <input id="gym-day-focus" type="text" onchange="updateGymDayFocus()" class="bg-transparent text-sm font-extrabold text-white border-b border-transparent focus:border-electric focus:outline-none w-full mt-1" placeholder="Enfoque del día...">
           </div>
           <button onclick="toggleNewExerciseForm()" class="px-3 py-1.5 rounded-lg bg-electric/15 border border-electric/40 text-electricGlow text-xs font-bold shrink-0">+ Ejercicio</button>
         </div>
 
-        <!-- Formulario Nuevo Ejercicio -->
         <div id="new-ex-form" class="hidden bg-obsidian/90 border border-electric/30 rounded-xl p-3 space-y-2">
           <input id="ex-name-in" type="text" placeholder="Nombre ejercicio (ej. Sentadilla Trasera)" class="w-full bg-slateCard border border-steel rounded-lg px-2.5 py-2 text-xs text-white">
           <div class="flex gap-2">
-            <input id="ex-target-in" type="text" placeholder="Meta (ej. 4x5 @ 85%)" class="flex-1 bg-slateCard border border-steel rounded-lg px-2.5 py-2 text-xs text-white">
+            <input id="ex-target-in" type="text" placeholder="Meta (ej. 4x5 @ 82%)" class="flex-1 bg-slateCard border border-steel rounded-lg px-2.5 py-2 text-xs text-white">
             <input id="ex-rest-in" type="number" value="150" placeholder="Descanso (s)" class="w-24 bg-slateCard border border-steel rounded-lg px-2.5 py-2 text-xs font-mono text-white">
           </div>
           <button onclick="addExercise()" class="w-full py-2 rounded-lg bg-electric text-obsidian font-bold text-xs">Guardar Ejercicio</button>
         </div>
       </div>
 
-      <!-- Lista de Ejercicios del Día -->
       <div id="gym-exercises-list" class="space-y-3"></div>
-    </section>
-
-    <!-- ==================== PESTAÑA 3: SALTO VERTICAL ==================== -->
-    <section id="tab-jump" class="hidden space-y-4">
-      
-      <!-- Meta Configurable -->
-      <div class="bg-slateCard border border-steel/70 rounded-2xl p-4 space-y-3">
-        <div class="flex items-center justify-between">
-          <div>
-            <span class="text-xs font-mono uppercase text-slate-400">Progreso Salto Vertical</span>
-            <div class="flex items-baseline gap-1.5">
-              <span id="jump-best-display" class="text-3xl font-mono font-extrabold text-white tabular-nums">--</span>
-              <span class="text-xs font-mono text-slate-400">cm / Meta:</span>
-              <input id="jump-goal-input" type="number" onchange="updateJumpGoal()" class="w-14 bg-obsidian border border-steel rounded px-1.5 py-0.5 text-xs font-mono font-bold text-amber-400 text-center">
-              <span class="text-xs font-mono text-slate-400">cm</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="w-full h-2.5 bg-obsidian rounded-full overflow-hidden">
-          <div id="jump-progress-bar" class="h-full bg-gradient-to-r from-electric to-amber-400 transition-all duration-500" style="width: 0%"></div>
-        </div>
-
-        <!-- Récords por Modalidad -->
-        <div class="grid grid-cols-3 gap-2 pt-1">
-          <div class="bg-obsidian/80 border border-steel/50 rounded-xl p-2.5 text-center">
-            <span class="text-[10px] font-mono text-slate-400 block">SPIKE JUMP</span>
-            <span id="pr-spike" class="text-base font-mono font-extrabold text-electricGlow">--</span>
-          </div>
-          <div class="bg-obsidian/80 border border-steel/50 rounded-xl p-2.5 text-center">
-            <span class="text-[10px] font-mono text-slate-400 block">CMJ (SIN IMP.)</span>
-            <span id="pr-cmj" class="text-base font-mono font-extrabold text-emerald-400">--</span>
-          </div>
-          <div class="bg-obsidian/80 border border-steel/50 rounded-xl p-2.5 text-center">
-            <span class="text-[10px] font-mono text-slate-400 block">SQUAT JUMP</span>
-            <span id="pr-sj" class="text-base font-mono font-extrabold text-amber-400">--</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Registrar Nueva Marca -->
-      <div class="bg-slateCard border border-steel/70 rounded-2xl p-4 space-y-3">
-        <span class="text-xs font-mono uppercase text-slate-300 font-bold">Registrar Medición</span>
-        <div class="grid grid-cols-3 gap-2">
-          <select id="jump-type-in" class="col-span-1 bg-obsidian border border-steel rounded-xl px-2.5 py-2.5 text-xs text-white">
-            <option value="Spike">Spike Jump</option>
-            <option value="CMJ">CMJ</option>
-            <option value="SJ">Squat Jump</option>
-          </select>
-          <input id="jump-cm-in" type="number" step="0.5" placeholder="Salto (cm)" class="bg-obsidian border border-steel rounded-xl px-3 py-2.5 text-xs font-mono font-bold text-white">
-          <button onclick="addJumpRecord()" class="rounded-xl bg-electric text-obsidian font-extrabold text-xs active:scale-95 transition">Guardar</button>
-        </div>
-
-        <!-- Calculadora Alcance sobre la Red (2.43 m) -->
-        <div class="pt-2 border-t border-steel/50 flex items-center justify-between text-xs">
-          <div class="flex items-center gap-1.5">
-            <span class="text-slate-400">Alcance parado (cm):</span>
-            <input id="standing-reach-in" type="number" value="224" oninput="calcNetReach()" class="w-16 bg-obsidian border border-steel rounded-lg px-2 py-1 font-mono text-white text-center">
-          </div>
-          <div class="text-right">
-            <span class="text-slate-400 block text-[10px]">Sobre red (243 cm)</span>
-            <span id="net-clearance-out" class="font-mono font-bold text-emerald-400">--</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Historial de Saltos -->
-      <div class="bg-slateCard border border-steel/70 rounded-2xl p-4 space-y-2">
-        <span class="text-xs font-mono uppercase text-slate-400 font-bold">Historial de Mediciones</span>
-        <div id="jump-history-list" class="space-y-1.5 text-xs"></div>
-      </div>
     </section>
 
   </main>
@@ -414,9 +337,9 @@
     </div>
   </div>
 
-  <!-- BARRA DE NAVEGACIÓN INFERIOR (4 PESTAÑAS) -->
+  <!-- BARRA DE NAVEGACIÓN INFERIOR (3 PESTAÑAS) -->
   <nav class="fixed bottom-0 left-0 right-0 z-30 bg-obsidian/95 backdrop-blur-md border-t border-steel/70 px-2 py-2">
-    <div class="max-w-md mx-auto grid grid-cols-4 gap-1">
+    <div class="max-w-md mx-auto grid grid-cols-3 gap-1.5">
       <button onclick="switchTab('home')" id="nav-home" class="nav-btn flex flex-col items-center py-1.5 rounded-xl text-electricGlow bg-electric/10 transition">
         <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
         <span class="text-[10px] font-bold">Inicio</span>
@@ -429,32 +352,128 @@
         <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
         <span class="text-[10px] font-bold">Gym/Plio</span>
       </button>
-      <button onclick="switchTab('jump')" id="nav-jump" class="nav-btn flex flex-col items-center py-1.5 rounded-xl text-slate-400 transition">
-        <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
-        <span class="text-[10px] font-bold">Salto</span>
-      </button>
     </div>
   </nav>
 
-  <!-- MODAL RESPALDO JSON -->
-  <div id="backup-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slateCard border border-steel rounded-2xl p-5 max-w-sm w-full space-y-4">
-      <div class="flex items-center justify-between">
-        <h3 class="text-sm font-extrabold text-white">Respaldo de Datos</h3>
-        <button onclick="closeBackupModal()" class="text-slate-400 hover:text-white">✕</button>
+  <!-- MODAL ENCUESTA INICIAL (RUTINA + MACROS) -->
+  <div id="onboarding-modal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-slateCard border border-electric/50 rounded-2xl p-5 max-w-md w-full space-y-3.5 my-auto shadow-2xl">
+      <div class="flex items-start justify-between">
+        <div>
+          <span class="text-[10px] font-mono uppercase text-electricGlow font-bold">Configuración Rápida</span>
+          <h3 class="text-base font-extrabold text-white">Encuesta de Rutina y Macros</h3>
+          <p class="text-[11px] text-slate-400">Calcula tus calorías/macros y arma tu rutina para los días activos.</p>
+        </div>
+        <button onclick="dismissOnboarding()" class="text-slate-400 hover:text-white text-sm px-2">✕</button>
       </div>
-      <p class="text-xs text-slate-400">Todos tus datos se guardan en tu teléfono. Exporta una copia periódicamente para no perder nada.</p>
-      <button onclick="exportData()" class="w-full py-2.5 rounded-xl bg-electric text-obsidian font-bold text-xs">Descargar Respaldo (.json)</button>
-      <label class="block w-full py-2.5 rounded-xl bg-obsidian border border-steel text-center text-xs font-semibold text-slate-300 cursor-pointer">
-        Cargar Respaldo (.json)
-        <input type="file" accept=".json" onchange="importData(event)" class="hidden">
-      </label>
+
+      <div class="space-y-2.5 text-xs">
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="text-[10px] text-slate-400 block mb-1">Peso (kg)</label>
+            <input id="ob-weight" type="number" value="83" class="w-full bg-obsidian border border-steel rounded-xl px-2.5 py-2 font-mono text-white">
+          </div>
+          <div>
+            <label class="text-[10px] text-slate-400 block mb-1">Estatura (cm)</label>
+            <input id="ob-height" type="number" value="174" class="w-full bg-obsidian border border-steel rounded-xl px-2.5 py-2 font-mono text-white">
+          </div>
+          <div>
+            <label class="text-[10px] text-slate-400 block mb-1">Edad</label>
+            <input id="ob-age" type="number" value="19" class="w-full bg-obsidian border border-steel rounded-xl px-2.5 py-2 font-mono text-white">
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[11px] text-slate-300 font-semibold block mb-1">Objetivo de composición y rendimiento</label>
+          <select id="ob-goal" class="w-full bg-obsidian border border-steel rounded-xl px-3 py-2 text-white">
+            <option value="potencia_salto">Explosividad / Potencia de salto (ligero superávit / recomposición)</option>
+            <option value="recomp_fuerza">Recomposición corporal & fuerza (calorías equilibradas, alta proteína)</option>
+            <option value="hipertrofia">Ganancia muscular / volumen</option>
+            <option value="definicion">Bajar grasa manteniendo masa muscular</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[11px] text-slate-300 font-semibold block mb-1">Actividad semanal</label>
+            <select id="ob-activity" class="w-full bg-obsidian border border-steel rounded-xl px-2.5 py-2 text-white">
+              <option value="1.55">Moderada (3-4 días/sem)</option>
+              <option value="1.725" selected>Alta (gym + deporte)</option>
+              <option value="1.9">Muy alta (doble sesión)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[11px] text-slate-300 font-semibold block mb-1">Equipo / Lugar</label>
+            <select id="ob-equip" class="w-full bg-obsidian border border-steel rounded-xl px-2.5 py-2 text-white">
+              <option value="gimnasio">Gimnasio completo</option>
+              <option value="casa_barra">Casa + barra / calistenia</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[11px] text-slate-300 font-semibold block mb-1">¿Qué días de la semana harás gym/pliometría?</label>
+          <div id="ob-days-selector" class="grid grid-cols-7 gap-1"></div>
+        </div>
+
+        <div>
+          <label class="text-[10px] font-mono text-slate-400 block mb-1">Gemini API Key (opcional)</label>
+          <input id="ob-apikey" type="password" placeholder="Vacío = cálculo y rutina al instante" class="w-full bg-obsidian border border-steel/70 rounded-xl px-3 py-1.5 text-xs font-mono text-white">
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-1">
+        <button onclick="dismissOnboarding()" class="px-3 py-2.5 rounded-xl bg-obsidian border border-steel text-slate-300 font-semibold text-xs">
+          Ahora no
+        </button>
+        <button onclick="applyOnboardingSurvey()" class="flex-1 py-2.5 rounded-xl bg-electric text-obsidian font-extrabold text-xs active:scale-95 transition">
+          Calcular Macros y Aplicar Rutina ✓
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CUENTA Y RESPALDO -->
+  <div id="account-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-slateCard border border-steel rounded-2xl p-5 max-w-sm w-full space-y-4 my-auto">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-sm font-extrabold text-white">Cuenta & Guardado</h3>
+          <p id="account-status-text" class="text-[11px] text-emerald-400 font-mono">Sesión activa: Invitado</p>
+        </div>
+        <button onclick="closeAccountModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+
+      <!-- Registro / Inicio de sesión de perfil -->
+      <div class="bg-obsidian/80 border border-steel/60 rounded-xl p-3 space-y-2">
+        <p class="text-[11px] font-semibold text-slate-200">Registrarse o Iniciar Sesión (guarda en este dispositivo)</p>
+        <input id="acc-user" type="text" placeholder="Nombre de usuario o correo" class="w-full bg-slateCard border border-steel rounded-lg px-3 py-2 text-xs text-white">
+        <input id="acc-pass" type="password" placeholder="Contraseña / PIN" class="w-full bg-slateCard border border-steel rounded-lg px-3 py-2 text-xs text-white">
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button onclick="registerOrSaveAccount()" class="py-2 rounded-lg bg-electric text-obsidian font-bold text-xs">Registrar / Guardar</button>
+          <button onclick="loginAccount()" class="py-2 rounded-lg bg-slateCard border border-steel text-white font-semibold text-xs">Iniciar Sesión</button>
+        </div>
+      </div>
+
+      <!-- Respaldo y Restauración JSON para mover entre dispositivos -->
+      <div class="space-y-2 pt-1 border-t border-steel/50">
+        <p class="text-[11px] text-slate-400">Para pasar tu cuenta a otro dispositivo (ej. de PC a celular o tras limpiar navegador), exporta tu archivo JSON y cárgalo allá:</p>
+        <button onclick="exportData()" class="w-full py-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-bold text-xs">Descargar Respaldo de Cuenta (.json)</button>
+        <label class="block w-full py-2.5 rounded-xl bg-obsidian border border-steel text-center text-xs font-semibold text-slate-300 cursor-pointer">
+          Restaurar desde Archivo (.json)
+          <input type="file" accept=".json" onchange="importData(event)" class="hidden">
+        </label>
+      </div>
     </div>
   </div>
 
   <script>
-    // ==================== ESTADO INICIAL EDITABLE ====================
+    const WEEK_DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    const SHORT_DAYS = { 'Lunes': 'Lun', 'Martes': 'Mar', 'Miércoles': 'Mié', 'Jueves': 'Jue', 'Viernes': 'Vie', 'Sábado': 'Sáb', 'Domingo': 'Dom' };
+
     const DEFAULT_STATE = {
+      onboardingCompleted: false,
+      account: { username: 'Invitado', passwordHash: '' },
       schedule: {
         0: { title: 'Domingo — Descanso Activo', note: 'Recuperación y movilidad' },
         1: { title: 'Lunes — Vóleibol Club', note: 'Entrenamiento técnico/táctico en cancha' },
@@ -470,6 +489,7 @@
         { id: 3, text: 'Completar entrenamiento del día', done: false }
       ],
       notes: '',
+      geminiApiKey: '',
       macroGoals: { kcal: 2550, p: 185, c: 310, f: 65 },
       foods: [
         { id: 'f1', name: 'Pechuga de pollo (cruda)', kcal: 120, p: 22.5, c: 0, f: 2.6 },
@@ -487,7 +507,9 @@
       macroHistory: [],
       currentGymDay: 'Martes',
       gymDays: {
+        'Lunes': { active: false, focus: 'Día Libre / Vóley', exercises: [] },
         'Martes': {
+          active: true,
           focus: 'Tren Inferior Fuerza + Pliometría',
           exercises: [
             { id: 'e1', name: 'Drop Jumps / Saltos al cajón', target: '4x4 reps', rest: 120, logs: [] },
@@ -495,6 +517,7 @@
           ]
         },
         'Miércoles': {
+          active: true,
           focus: 'Tren Superior Empuje / Tracción',
           exercises: [
             { id: 'e3', name: 'Press Banca Plano', target: '4x6', rest: 150, logs: [] },
@@ -502,28 +525,256 @@
           ]
         },
         'Jueves': {
+          active: true,
           focus: 'Potencia Explosiva + Vóley',
           exercises: [
             { id: 'e5', name: 'Squat Jump (Salto estático)', target: '4x5', rest: 120, logs: [] }
           ]
         },
         'Viernes': {
+          active: true,
           focus: 'Tren Superior + Estabilidad',
           exercises: [
             { id: 'e6', name: 'Press Militar', target: '3x8', rest: 120, logs: [] }
           ]
-        }
-      },
-      jumpGoal: 100,
-      standingReach: 224,
-      jumpRecords: []
+        },
+        'Sábado': { active: false, focus: 'Día Libre / Partido', exercises: [] },
+        'Domingo': { active: false, focus: 'Descanso Total', exercises: [] }
+      }
     };
 
-    let state = JSON.parse(localStorage.getItem('reinaldo_tracker_v2')) || DEFAULT_STATE;
+    let accountsStore = JSON.parse(localStorage.getItem('reinaldo_accounts_v1')) || {};
+    let state = JSON.parse(localStorage.getItem('reinaldo_tracker_v4')) || DEFAULT_STATE;
+
+    WEEK_DAYS.forEach(d => {
+      if (!state.gymDays[d]) state.gymDays[d] = { active: false, focus: 'Día sin asignar', exercises: [] };
+    });
 
     function saveState() {
-      localStorage.setItem('reinaldo_tracker_v2', JSON.stringify(state));
+      localStorage.setItem('reinaldo_tracker_v4', JSON.stringify(state));
+      if (state.account && state.account.username && state.account.username !== 'Invitado') {
+        accountsStore[state.account.username] = {
+          passwordHash: state.account.passwordHash,
+          data: state
+        };
+        localStorage.setItem('reinaldo_accounts_v1', JSON.stringify(accountsStore));
+      }
+      updateAccountBadge();
       renderHome();
+    }
+
+    // ==================== ENCUESTA AL INICIAR ====================
+    let tempOnboardingDays = new Set();
+
+    function checkInitialOnboarding() {
+      if (!state.onboardingCompleted) {
+        openOnboardingModal();
+      }
+    }
+
+    function openOnboardingModal() {
+      const activeList = WEEK_DAYS.filter(d => state.gymDays[d].active);
+      tempOnboardingDays = new Set(activeList.length ? activeList : ['Martes', 'Miércoles', 'Jueves', 'Viernes']);
+      if (state.geminiApiKey) document.getElementById('ob-apikey').value = state.geminiApiKey;
+      renderOnboardingDays();
+      document.getElementById('onboarding-modal').classList.remove('hidden');
+    }
+
+    function dismissOnboarding() {
+      state.onboardingCompleted = true;
+      saveState();
+      document.getElementById('onboarding-modal').classList.add('hidden');
+    }
+
+    function renderOnboardingDays() {
+      const box = document.getElementById('ob-days-selector');
+      box.innerHTML = WEEK_DAYS.map(d => {
+        const active = tempOnboardingDays.has(d);
+        return `
+          <button type="button" onclick="toggleOnboardingDay('${d}')" class="py-2 rounded-lg text-[11px] font-bold border transition ${
+            active ? 'bg-electric text-obsidian border-electricGlow' : 'bg-obsidian text-slate-400 border-steel/50'
+          }">${SHORT_DAYS[d]}</button>
+        `;
+      }).join('');
+    }
+
+    function toggleOnboardingDay(d) {
+      if (tempOnboardingDays.has(d)) {
+        if (tempOnboardingDays.size > 1) tempOnboardingDays.delete(d);
+      } else {
+        tempOnboardingDays.add(d);
+      }
+      renderOnboardingDays();
+    }
+
+    function calculateMacrosFromSurvey(weight, height, age, activity, goal) {
+      // Mifflin-St Jeor base masculina
+      const bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+      let tdee = bmr * activity;
+      if (goal === 'potencia_salto') tdee += 150;
+      if (goal === 'hipertrofia') tdee += 300;
+      if (goal === 'definicion') tdee -= 400;
+
+      const kcal = Math.round(tdee / 10) * 10;
+      const p = Math.round(weight * (goal === 'definicion' ? 2.4 : 2.2));
+      const f = Math.round((kcal * 0.23) / 9);
+      const c = Math.max(80, Math.round((kcal - (p * 4 + f * 9)) / 4));
+      return { kcal, p, c, f };
+    }
+
+    function buildRoutineForDays(daysArr, goal, equip) {
+      const blocks = [
+        {
+          focus: goal === 'potencia_salto' ? 'Potencia Explosiva & Tren Inferior' : 'Fuerza Tren Inferior',
+          exercises: [
+            { name: goal === 'potencia_salto' ? 'Squat Jump / Saltos al Cajón' : 'Sentadilla Trasera', target: '4x5 reps', rest: 150 },
+            { name: 'Peso Muerto Rumano', target: '3x6-8 reps', rest: 150 },
+            { name: 'Zancadas Búlgaras', target: '3x8 c/pierna', rest: 120 }
+          ]
+        },
+        {
+          focus: 'Tren Superior Empuje & Tracción',
+          exercises: [
+            { name: 'Press Banca / Flexiones con Lastre', target: '4x6-8 reps', rest: 150 },
+            { name: 'Dominadas / Remo con Barra', target: '4x6-10 reps', rest: 150 },
+            { name: 'Press Militar / Pike Push-ups', target: '3x8-10 reps', rest: 120 }
+          ]
+        }
+      ];
+
+      const out = {};
+      daysArr.forEach((d, idx) => {
+        const b = blocks[idx % blocks.length];
+        out[d] = {
+          focus: b.focus,
+          exercises: b.exercises.map((ex, i) => ({
+            id: 'ob_' + d + '_' + i + '_' + Date.now(),
+            name: equip === 'casa_barra' ? ex.name.replace('Press Banca / ', '').replace('Sentadilla Trasera', 'Sentadilla Búlgara / Peso Corporal') : ex.name,
+            target: ex.target,
+            rest: ex.rest,
+            logs: []
+          }))
+        };
+      });
+      return out;
+    }
+
+    function applyOnboardingSurvey() {
+      const weight = Number(document.getElementById('ob-weight').value) || 83;
+      const height = Number(document.getElementById('ob-height').value) || 174;
+      const age = Number(document.getElementById('ob-age').value) || 19;
+      const goal = document.getElementById('ob-goal').value;
+      const activity = Number(document.getElementById('ob-activity').value) || 1.725;
+      const equip = document.getElementById('ob-equip').value;
+      const apiKey = document.getElementById('ob-apikey').value.trim();
+      if (apiKey) state.geminiApiKey = apiKey;
+
+      state.macroGoals = calculateMacrosFromSurvey(weight, height, age, activity, goal);
+
+      const selectedDays = Array.from(tempOnboardingDays);
+      const generated = buildRoutineForDays(selectedDays, goal, equip);
+
+      WEEK_DAYS.forEach(d => {
+        if (generated[d]) {
+          state.gymDays[d] = {
+            active: true,
+            focus: generated[d].focus,
+            exercises: generated[d].exercises
+          };
+        } else {
+          state.gymDays[d].active = false;
+        }
+      });
+
+      state.currentGymDay = selectedDays[0] || 'Martes';
+      state.onboardingCompleted = true;
+      saveState();
+      document.getElementById('onboarding-modal').classList.add('hidden');
+      switchTab('home');
+      openAccountModal();
+    }
+
+    // ==================== CUENTAS Y RESPALDO ====================
+    function simpleHash(str) {
+      let h = 0;
+      for (let i = 0; i < str.length; i++) {
+        h = ((h << 5) - h) + str.charCodeAt(i);
+        h |= 0;
+      }
+      return String(h);
+    }
+
+    function updateAccountBadge() {
+      const name = (state.account && state.account.username) ? state.account.username : 'Invitado';
+      document.getElementById('header-account-name').textContent = name;
+      document.getElementById('account-status-text').textContent = `Sesión activa: ${name}`;
+    }
+
+    function openAccountModal() {
+      updateAccountBadge();
+      document.getElementById('account-modal').classList.remove('hidden');
+    }
+
+    function closeAccountModal() {
+      document.getElementById('account-modal').classList.add('hidden');
+    }
+
+    function registerOrSaveAccount() {
+      const user = document.getElementById('acc-user').value.trim();
+      const pass = document.getElementById('acc-pass').value;
+      if (!user) return alert('Ingresa un nombre de usuario o correo.');
+      state.account = {
+        username: user,
+        passwordHash: pass ? simpleHash(pass) : ''
+      };
+      saveState();
+      updateAccountBadge();
+      alert(`Cuenta "${user}" registrada y vinculada a tus datos.`);
+    }
+
+    function loginAccount() {
+      const user = document.getElementById('acc-user').value.trim();
+      const pass = document.getElementById('acc-pass').value;
+      if (!user || !accountsStore[user]) {
+        return alert('No se encontró esa cuenta en este navegador. Usa "Registrar / Guardar" o carga tu respaldo .json.');
+      }
+      const stored = accountsStore[user];
+      if (stored.passwordHash && stored.passwordHash !== simpleHash(pass)) {
+        return alert('Contraseña incorrecta.');
+      }
+      state = { ...DEFAULT_STATE, ...stored.data, account: { username: user, passwordHash: stored.passwordHash } };
+      state.onboardingCompleted = true;
+      saveState();
+      updateAccountBadge();
+      closeAccountModal();
+      switchTab('home');
+    }
+
+    function exportData() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      const userSlug = (state.account?.username || 'usuario').replace(/[^a-zA-Z0-9_-]/g, '_');
+      a.download = `tracker-${userSlug}-${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          state = { ...DEFAULT_STATE, ...JSON.parse(e.target.result), onboardingCompleted: true };
+          saveState();
+          updateAccountBadge();
+          closeAccountModal();
+          switchTab('home');
+        } catch (err) {
+          alert('Archivo inválido');
+        }
+      };
+      reader.readAsText(file);
     }
 
     // ==================== NAVEGACIÓN Y FECHA ====================
@@ -535,7 +786,7 @@
     }
 
     function switchTab(tab) {
-      ['home', 'macros', 'gym', 'jump'].forEach(t => {
+      ['home', 'macros', 'gym'].forEach(t => {
         document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tab);
         const btn = document.getElementById(`nav-${t}`);
         if (t === tab) {
@@ -549,7 +800,6 @@
       if (tab === 'home') renderHome();
       if (tab === 'macros') renderMacros();
       if (tab === 'gym') renderGym();
-      if (tab === 'jump') renderJump();
     }
 
     // ==================== LÓGICA PESTAÑA INICIO ====================
@@ -562,25 +812,18 @@
       document.getElementById('home-today-title').textContent = todayPlan.title;
       document.getElementById('home-today-note').textContent = todayPlan.note;
 
-      // Resumen Macros
       const totals = getMacroTotals();
       document.getElementById('home-kcal-val').textContent = Math.round(totals.kcal);
-      document.getElementById('home-kcal-goal').textContent = `/ ${state.macroGoals.kcal}`;
+      document.getElementById('home-kcal-goal').textContent = `/ ${state.macroGoals.kcal} kcal`;
       const kcalPct = Math.min(100, (totals.kcal / state.macroGoals.kcal) * 100);
       document.getElementById('home-kcal-bar').style.width = `${kcalPct}%`;
       document.getElementById('home-prot-text').textContent = `${Math.round(totals.p)}g / ${state.macroGoals.p}g Prot`;
 
-      // Resumen Salto
-      const maxJump = state.jumpRecords.length ? Math.max(...state.jumpRecords.map(r => r.cm)) : 0;
-      document.getElementById('home-jump-val').textContent = maxJump > 0 ? maxJump : '--';
-      document.getElementById('home-jump-goal').textContent = `/ ${state.jumpGoal} cm`;
-      const jumpPct = maxJump > 0 ? Math.min(100, (maxJump / state.jumpGoal) * 100) : 0;
-      document.getElementById('home-jump-bar').style.width = `${jumpPct}%`;
-      document.getElementById('home-jump-diff').textContent = maxJump > 0
-        ? (maxJump >= state.jumpGoal ? '¡Meta alcanzada!' : `Faltan ${(state.jumpGoal - maxJump).toFixed(1)} cm`)
-        : 'Registra tu marca';
+      const activeDays = WEEK_DAYS.filter(d => state.gymDays[d].active).map(d => SHORT_DAYS[d]);
+      document.getElementById('home-gym-active-days').textContent = activeDays.length
+        ? `Días activos: ${activeDays.join(' • ')}`
+        : 'Sin días activos seleccionados';
 
-      // Checklist
       const list = document.getElementById('checklist-items');
       list.innerHTML = state.habits.map(h => `
         <div class="flex items-center justify-between bg-obsidian/70 border border-steel/50 rounded-xl px-3 py-2">
@@ -649,7 +892,7 @@
 
     function saveNotes() {
       state.notes = document.getElementById('home-notes').value;
-      localStorage.setItem('reinaldo_tracker_v2', JSON.stringify(state));
+      saveState();
       const badge = document.getElementById('notes-saved-badge');
       badge.classList.remove('opacity-0');
       setTimeout(() => badge.classList.add('opacity-0'), 1200);
@@ -805,27 +1048,58 @@
       renderMacros();
     }
 
-    // ==================== LÓGICA GYM & PLIO ====================
-    function setGymDay(day) {
+    // ==================== LÓGICA GYM & 7 DÍAS ====================
+    function selectGymDay(day) {
       state.currentGymDay = day;
-      ['Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(d => {
-        const btn = document.getElementById(`gym-btn-${d}`);
-        if (d === day) {
-          btn.classList.add('bg-electric', 'text-obsidian');
-          btn.classList.remove('text-slate-400');
-        } else {
-          btn.classList.remove('bg-electric', 'text-obsidian');
-          btn.classList.add('text-slate-400');
-        }
-      });
+      saveState();
       renderGym();
     }
 
+    function toggleCurrentGymDayActive() {
+      const checked = document.getElementById('gym-day-active-checkbox').checked;
+      state.gymDays[state.currentGymDay].active = checked;
+      saveState();
+      renderWeekGrid();
+    }
+
+    function renderWeekGrid() {
+      const grid = document.getElementById('week-days-grid');
+      grid.innerHTML = WEEK_DAYS.map(d => {
+        const info = state.gymDays[d];
+        const isSelected = d === state.currentGymDay;
+        return `
+          <button onclick="selectGymDay('${d}')" class="flex flex-col items-center py-2 rounded-xl border text-[11px] font-bold transition ${
+            isSelected
+              ? 'bg-electric text-obsidian border-electricGlow shadow'
+              : info.active
+                ? 'bg-obsidian text-white border-electric/50'
+                : 'bg-obsidian/40 text-slate-500 border-steel/40'
+          }">
+            <span>${SHORT_DAYS[d]}</span>
+            <span class="w-1.5 h-1.5 rounded-full mt-1 ${info.active ? (isSelected ? 'bg-obsidian' : 'bg-emerald-400') : 'bg-transparent'}"></span>
+          </button>
+        `;
+      }).join('');
+    }
+
     function renderGym() {
+      renderWeekGrid();
       const dayData = state.gymDays[state.currentGymDay];
+      document.getElementById('gym-selected-day-title').textContent = state.currentGymDay.toUpperCase();
+      document.getElementById('gym-day-active-checkbox').checked = !!dayData.active;
       document.getElementById('gym-day-focus').value = dayData.focus;
 
       const container = document.getElementById('gym-exercises-list');
+      if (!dayData.active && dayData.exercises.length === 0) {
+        container.innerHTML = `
+          <div class="bg-slateCard/60 border border-steel/50 rounded-2xl p-5 text-center space-y-2">
+            <p class="text-xs font-bold text-slate-300">${state.currentGymDay} está marcado como día no activo de gym</p>
+            <p class="text-[11px] text-slate-400">Activa "Día de gym" o abre "Encuesta" para asignar rutina.</p>
+          </div>
+        `;
+        return;
+      }
+
       container.innerHTML = dayData.exercises.map(ex => {
         const best1RM = ex.logs.length ? Math.max(...ex.logs.map(l => l.weight * (1 + l.reps / 30))) : 0;
         return `
@@ -877,6 +1151,7 @@
       const rest = Number(document.getElementById('ex-rest-in').value) || 120;
       if (!name) return;
 
+      state.gymDays[state.currentGymDay].active = true;
       state.gymDays[state.currentGymDay].exercises.push({
         id: 'ex' + Date.now(),
         name,
@@ -964,127 +1239,11 @@
       } catch (e) {}
     }
 
-    // ==================== LÓGICA SALTO VERTICAL ====================
-    function renderJump() {
-      document.getElementById('jump-goal-input').value = state.jumpGoal;
-      document.getElementById('standing-reach-in').value = state.standingReach || 224;
-
-      const byType = (t) => {
-        const arr = state.jumpRecords.filter(r => r.type === t);
-        return arr.length ? Math.max(...arr.map(r => r.cm)) : null;
-      };
-
-      const spike = byType('Spike');
-      const cmj = byType('CMJ');
-      const sj = byType('SJ');
-      const overall = state.jumpRecords.length ? Math.max(...state.jumpRecords.map(r => r.cm)) : null;
-
-      document.getElementById('pr-spike').textContent = spike ? `${spike} cm` : '--';
-      document.getElementById('pr-cmj').textContent = cmj ? `${cmj} cm` : '--';
-      document.getElementById('pr-sj').textContent = sj ? `${sj} cm` : '--';
-      document.getElementById('jump-best-display').textContent = overall ? overall : '--';
-
-      const pct = overall ? Math.min(100, (overall / state.jumpGoal) * 100) : 0;
-      document.getElementById('jump-progress-bar').style.width = `${pct}%`;
-
-      calcNetReach();
-
-      const hist = document.getElementById('jump-history-list');
-      hist.innerHTML = state.jumpRecords.length ? state.jumpRecords.slice().reverse().map(r => `
-        <div class="flex justify-between items-center bg-obsidian/70 border border-steel/40 px-3 py-2 rounded-xl font-mono text-xs">
-          <div>
-            <span class="text-electricGlow font-bold">${r.type}</span>
-            <span class="text-slate-400 ml-2">${r.date}</span>
-          </div>
-          <div class="flex items-center gap-3">
-            <span class="text-white font-extrabold">${r.cm} cm</span>
-            <button onclick="deleteJump(${r.id})" class="text-slate-600 hover:text-rose-400">✕</button>
-          </div>
-        </div>
-      `).join('') : `<p class="text-slate-500 text-xs text-center py-2">Registra tu primer salto arriba.</p>`;
-    }
-
-    function updateJumpGoal() {
-      state.jumpGoal = Number(document.getElementById('jump-goal-input').value) || 100;
-      saveState();
-      renderJump();
-    }
-
-    function addJumpRecord() {
-      const type = document.getElementById('jump-type-in').value;
-      const cm = Number(document.getElementById('jump-cm-in').value);
-      if (cm <= 0) return;
-
-      const now = new Date();
-      state.jumpRecords.push({
-        id: Date.now(),
-        type,
-        cm,
-        date: `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`
-      });
-      document.getElementById('jump-cm-in').value = '';
-      saveState();
-      renderJump();
-    }
-
-    function deleteJump(id) {
-      state.jumpRecords = state.jumpRecords.filter(r => r.id !== id);
-      saveState();
-      renderJump();
-    }
-
-    function calcNetReach() {
-      const reach = Number(document.getElementById('standing-reach-in').value) || 0;
-      state.standingReach = reach;
-      localStorage.setItem('reinaldo_tracker_v2', JSON.stringify(state));
-
-      const spikeRecords = state.jumpRecords.filter(r => r.type === 'Spike');
-      const bestJump = spikeRecords.length
-        ? Math.max(...spikeRecords.map(r => r.cm))
-        : (state.jumpRecords.length ? Math.max(...state.jumpRecords.map(r => r.cm)) : 0);
-
-      const out = document.getElementById('net-clearance-out');
-      if (reach > 0 && bestJump > 0) {
-        const totalReach = reach + bestJump;
-        const diff = totalReach - 243;
-        out.textContent = `${totalReach} cm (${diff >= 0 ? '+' : ''}${diff.toFixed(1)} cm)`;
-      } else {
-        out.textContent = '--';
-      }
-    }
-
-    // ==================== RESPALDO JSON ====================
-    function openBackupModal() { document.getElementById('backup-modal').classList.remove('hidden'); }
-    function closeBackupModal() { document.getElementById('backup-modal').classList.add('hidden'); }
-
-    function exportData() {
-      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `reinaldo-tracker-backup-${new Date().toISOString().slice(0,10)}.json`;
-      a.click();
-    }
-
-    function importData(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          state = JSON.parse(e.target.result);
-          saveState();
-          closeBackupModal();
-          switchTab('home');
-        } catch (err) {
-          alert('Archivo inválido');
-        }
-      };
-      reader.readAsText(file);
-    }
-
     // INICIALIZACIÓN
     initHeader();
+    updateAccountBadge();
     switchTab('home');
+    checkInitialOnboarding();
   </script>
 </body>
 </html>
